@@ -792,6 +792,7 @@ Scene_Map.prototype.isMenuCalled = function() {
 };
 
 Scene_Map.prototype.callMenu = function() {
+    return;
     SoundManager.playOk();
     SceneManager.push(Scene_Menu);
     Window_MenuCommand.initCommandPosition();

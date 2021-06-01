@@ -5436,6 +5436,7 @@ Game_Map.prototype.setup = function(mapId) {
     }
     this._mapId = mapId;
     this._tilesetId = $dataMap.tilesetId;
+    //todo: position
     this._displayX = 0;
     this._displayY = 0;
     this.refereshVehicles();

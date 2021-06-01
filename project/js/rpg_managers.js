@@ -1819,7 +1819,9 @@ SceneManager.initialize = function() {
 
 SceneManager.initGraphics = function() {
     var type = this.preferableRendererType();
+    SceneManager.setWindowSize();
     Graphics.initialize(this._screenWidth, this._screenHeight, type);
+
     Graphics.boxWidth = this._boxWidth;
     Graphics.boxHeight = this._boxHeight;
     Graphics.setLoadingImage('img/system/Loading.png');

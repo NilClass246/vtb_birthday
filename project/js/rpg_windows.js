@@ -6,7 +6,6 @@
 // Window_Base
 //
 // The superclass of all windows within the game.
-
 function Window_Base() {
     this.initialize.apply(this, arguments);
 }
@@ -59,7 +58,7 @@ Window_Base.prototype.textPadding = function() {
 };
 
 Window_Base.prototype.standardBackOpacity = function() {
-    return 192;
+    return 255;
 };
 
 Window_Base.prototype.loadWindowskin = function() {
@@ -4245,9 +4244,11 @@ Window_Message.prototype.constructor = Window_Message;
 Window_Message.prototype.initialize = function() {
     var width = this.windowWidth();
     var height = this.windowHeight();
-    var x = (Graphics.boxWidth - width) / 2;
+    var x = (Graphics.boxWidth - width+ Graphics.boxWidth*(1/5)) / 2
+    //Graphics.boxWidth*(1/5);
     Window_Base.prototype.initialize.call(this, x, 0, width, height);
-    this.openness = 0;
+    //todo: changed
+    //this.openness = 0;
     this.initMembers();
     this.createSubWindows();
     this.updatePlacement();
@@ -4278,7 +4279,7 @@ Window_Message.prototype.createSubWindows = function() {
 };
 
 Window_Message.prototype.windowWidth = function() {
-    return Graphics.boxWidth;
+    return Graphics.boxWidth*(4/5);
 };
 
 Window_Message.prototype.windowHeight = function() {
@@ -4350,8 +4351,10 @@ Window_Message.prototype.updateBackground = function() {
 };
 
 Window_Message.prototype.terminateMessage = function() {
-    this.close();
+    //todo: changed
+    //this.close();
     this._goldWindow.close();
+    this.contents.clear();
     $gameMessage.clear();
 };
 
