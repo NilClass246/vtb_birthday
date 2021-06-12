@@ -4,6 +4,18 @@ BirthdayManager.temps = {};
 BirthdayManager.TachiWidth = 240;
 BirthdayManager.TachiHeight = 540;
 
+BirthdayManager.camera_xoffset = 0;
+BirthdayManager.camera_yoffset = 0;
+
+//推箱子相关方法
+BirthdayManager.current_target_list = [];
+
+BirthdayManager.box_state = [];
+
+BirthdayManager.updateBoxState = function(id){
+
+}
+
 //缩放方法
 
 BirthdayManager.focus = function(rate){
@@ -18,12 +30,13 @@ BirthdayManager.focus = function(rate){
 }
 
 BirthdayManager.enterCakeScene = function(){
-    BirthdayManager.isCakeScene = true;
+    this.isCakeScene = true;
     var upperheight = Graphics.boxHeight/4;
     var tilesize = (upperheight)/2;
     var focusrate = tilesize/48;
-    BirthdayManager.focus(focusrate);
-    $gameMap._displayY +=0.25;
+    this.focus(focusrate);
+    this.camera_xoffset = 0.75;
+    $gameMap._displayY += 0.25;
     var scene = SceneManager._scene;
     scene._characterWindow = new Window_Boundary(0, scene._FaceWindow.y+scene._FaceWindow.height, Graphics.boxWidth*(3/5), upperheight);
     scene.addWindowToCakeScene(scene._characterWindow);
@@ -32,16 +45,18 @@ BirthdayManager.enterCakeScene = function(){
         ,Graphics.boxWidth-scene._characterWindow.width
         ,scene._characterWindow.height);
     scene.addWindowToCakeScene(scene._cakeDisplayWindow);
-    var trate = 0.65
-    var theight = BirthdayManager.TachiHeight*trate;
-    var twidth = BirthdayManager.TachiWidth*trate;
+    var rate = this.getTachiRate();
+    var trate = 0.65*rate;
+    var theight = this.TachiHeight*trate;
+    var twidth = this.TachiWidth*trate;
+
     var tachi = new Sprite(ImageManager.loadPicture("Test_Tachi"));
     tachi.scale.x = trate;
     tachi.scale.y = trate;
     tachi.y = scene._characterWindow.y+scene._characterWindow.height;
     //scene.addWindowToCakeScene(tachi);
-    scene._TachiWindow = new Window_Base(0, tachi.y, twidth+8, scene._messageWindow.y-tachi.y);
-    scene._TachiWindow._windowBackSprite.bitmap = ImageManager.loadPicture("Test_Tachi");
+    scene._TachiWindow = new Window_Base(0, tachi.y, twidth+8*rate, scene._messageWindow.y-tachi.y);
+    scene._TachiWindow._windowBackSprite.bitmap = tachi.bitmap;
     scene._TachiWindow._windowBackSprite.scale.x = trate;
     scene._TachiWindow._windowBackSprite.scale.y = trate;
 
@@ -56,18 +71,27 @@ BirthdayManager.enterCakeScene = function(){
     scene._messageWindow.drawText("酱油和青椒更配哦!",5,5)
 }
 
-BirthdayManager.showTachi = function(name, position){
-    //console.log(SceneManager._scene._messageWindow.y);
-    var root = "tachi/"
-    var picheight = 540;
-    var picwidth = 250;
+BirthdayManager.exitCakeScene = function(){
+
+}
+
+BirthdayManager.getTachiRate = function(){
     var xrate = Graphics.boxWidth/375;
     var yrate = Graphics.boxHeight/812;
     var rate = (Graphics.boxWidth<Graphics.boxHeight)?(xrate):(yrate);
     if(rate>=2){
         rate = 1;
     }
-    console.log(rate);
+    return rate;
+}
+
+BirthdayManager.showTachi = function(name, position){
+    //console.log(SceneManager._scene._messageWindow.y);
+    var root = "tachi/"
+    var picheight = 540;
+    var picwidth = 250;
+    var rate = this.getTachiRate();
+    //console.log(rate);
     var y = Graphics.boxHeight-(277*rate)-SceneManager._scene._messageWindow.height;
     var x = Graphics.boxWidth-(162.5*rate);
     if(position=="left"){
@@ -75,6 +99,10 @@ BirthdayManager.showTachi = function(name, position){
     }else if(position =="right"){
         $gameScreen.showPicture(2, root+name, 0, x, y, 65*rate, 65*rate, 255, 0);
     }
+}
+
+BirthdayManager.setTaskText = function(txt){
+    SceneManager._scene._TaskWindow.drawText(txt, 0, 0)
 }
 
 //窗口大小
@@ -222,6 +250,8 @@ Window_ItemList.prototype.maxCols = function() {
     return 1;
 };
 
+
+
 //边框窗口
 function Window_Boundary(){
     this.initialize.apply(this, arguments);
@@ -247,7 +277,7 @@ Window_CakeDisplay.prototype.initialize = function(x, y, width, height){
     var bheight = 472;
     var rate = width/bwidth-0.05;
     Window_Base.prototype.initialize.call(this, x, y, width, height);
-    this._cakeSprite = new Sprite(ImageManager.loadPicture("cakes/Cake"));
+    this._cakeSprite = new Sprite(ImageManager.loadPicture("cakes/cake1"));
     this._cakeSprite.anchor.x = 0.5;
     this._cakeSprite.anchor.y = 0.5;
     this._cakeSprite.x = width/2;

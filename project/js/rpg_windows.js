@@ -1248,7 +1248,7 @@ Window_Selectable.prototype.isCurrentItemEnabled = function() {
 };
 
 Window_Selectable.prototype.drawAllItems = function() {
-    console.log('drawm');
+    //console.log('drawm');
     var topIndex = this.topIndex();
     for (var i = 0; i < this.maxPageItems(); i++) {
         var index = topIndex + i;
@@ -1983,7 +1983,7 @@ Window_ItemList.prototype.selectLast = function() {
 Window_ItemList.prototype.drawItem = function(index) {
     var item = this._data[index];
     if (item) {
-        console.log(item);
+        //console.log(item);
         var numberWidth = this.numberWidth();
         var rect = this.itemRect(index);
         rect.width -= this.textPadding();
