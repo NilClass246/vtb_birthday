@@ -331,6 +331,9 @@ Window_Base.prototype.processNewLine = function(textState) {
     textState.x = textState.left;
     textState.y += textState.height;
     textState.height = this.calcTextHeight(textState, false);
+    if (DKTools.Localization._locale == "cn" && textState.text[textState.index]!="\n") {
+		return;
+	}
     textState.index++;
 };
 
@@ -1989,7 +1992,7 @@ Window_ItemList.prototype.drawItem = function(index) {
         rect.width -= this.textPadding();
         this.changePaintOpacity(this.isEnabled(item));
         this.drawItemName(item, rect.x, rect.y, rect.width - numberWidth);
-        this.drawItemNumber(item, rect.x, rect.y, rect.width);
+        //this.drawItemNumber(item, rect.x, rect.y, rect.width);
         this.changePaintOpacity(1);
     }
 };
@@ -4343,6 +4346,14 @@ Window_Message.prototype.startMessage = function() {
 
 Window_Message.prototype.updatePlacement = function() {
     this._positionType = $gameMessage.positionType();
+    if(this._positionType == 1){
+        this.x = 0;
+        this.width = Graphics.boxWidth;
+    }else{
+        this.width = this.windowWidth()
+        this.x = (Graphics.boxWidth - this.windowWidth()+ Graphics.boxWidth*(1/5)) / 2
+    }
+
     this.y = this._positionType * (Graphics.boxHeight - this.height) / 2;
     this._goldWindow.y = this.y > 0 ? 0 : Graphics.boxHeight - this._goldWindow.height;
 };
@@ -4358,6 +4369,9 @@ Window_Message.prototype.terminateMessage = function() {
     this._goldWindow.close();
     this.contents.clear();
     $gameMessage.clear();
+    this._positionType = 2;
+    this.updatePlacement();
+    this.setBackgroundType(0);
 };
 
 Window_Message.prototype.updateWait = function() {

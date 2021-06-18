@@ -6274,7 +6274,7 @@ Window.prototype.initialize = function() {
     this._animationCount = 0;
 
     this._padding = 18;
-    this._margin = 4;
+    this._margin = 0;
     this._colorTone = [0, 0, 0];
 
     this._windowSpriteContainer = null;
@@ -6525,11 +6525,11 @@ Window.prototype.update = function() {
  * @param {Number} height The height of the window
  */
 Window.prototype.move = function(x, y, width, height) {
-    this.x = x || 0;
-    this.y = y || 0;
+    this.x = Math.ceil(x) || 0;
+    this.y = Math.ceil(y) || 0;
     if (this._width !== width || this._height !== height) {
-        this._width = width || 0;
-        this._height = height || 0;
+        this._width = Math.ceil(width) || 0;
+        this._height = Math.ceil(height) || 0;
         this._refreshAllParts();
     }
 };

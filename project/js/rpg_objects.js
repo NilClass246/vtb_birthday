@@ -6442,6 +6442,7 @@ Game_CharacterBase.prototype.isCollidedWithVehicles = function(x, y) {
 };
 
 Game_CharacterBase.prototype.setPosition = function(x, y) {
+    //console.log(x,y);
     this._x = Math.round(x);
     this._y = Math.round(y);
     this._realX = x;
@@ -7384,7 +7385,7 @@ Game_Character.prototype.findDirectionTo = function(goalX, goalY) {
 };
 
 Game_Character.prototype.searchLimit = function() {
-    return 12;
+    return 25;
 };
 
 //-----------------------------------------------------------------------------
