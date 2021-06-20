@@ -16,6 +16,14 @@ BirthdayManager.messH = function(){
     return 4 * 36 + 18 * 2;
 }
 
+BirthdayManager.availHeight = function(){
+    return Graphics.boxHeight-this.messH()-this.upperFaceSize();
+}
+
+BirthdayManager.upperFaceSize = function(){
+    return Graphics.boxHeight/6;
+}
+
 //推箱子相关方法
 BirthdayManager.current_target_list = [];
 
@@ -219,6 +227,181 @@ BirthdayManager.renderMail = function(){
     ];
 }
 
+BirthdayManager.showCounter = function(){
+    var c = new Counter(3);
+    SceneManager._scene.addChild(c);
+}
+
+BirthdayManager.Pacman_Senteces = [
+    "{pacman_sentence1}",
+    "{pacman_sentence2}",
+    "{pacman_sentence3}",
+    "{pacman_sentence4}",
+]
+
+BirthdayManager.Pacman_RenderSentences = function(){
+
+    var sent = this.Pacman_Senteces[Math.floor(Math.random()*this.Pacman_Senteces.length)]
+    this.startMessage(sent);
+}
+
+function Counter(){
+    this.initialize.apply(this, arguments);
+}
+
+Counter.prototype = Object.create(Sprite.prototype);
+Counter.prototype.constructor = Counter;
+
+Counter.prototype.initialize = function(num){
+    Sprite.prototype.initialize.call(this);
+    this.num = num;
+    this.actualTime = 0;
+    this.anchor.x = 0.5;
+    this.anchor.y = 0.5;
+    this.x = Graphics.boxWidth/2;
+    this.y = Graphics.boxHeight/2;
+    this.scale.x = 2;
+    this.scale.y = 2;
+    this.bitmap = new Bitmap(32, 32);
+    this.write(this.num);
+}
+
+Counter.prototype.update = function(){
+    Sprite.prototype.update.call(this);
+    this.actualTime+=1;
+    this.scale.x = 2-this.actualTime/60;
+    this.scale.y = 2-this.actualTime/60;
+    if(this.actualTime>=60){
+        this.actualTime = 0;
+        this.num -=1;
+        this.write(this.num);
+    }
+    if(this.num ==0){
+        this.destroy();
+    }
+}
+
+Counter.prototype.write = function(t){
+    this.bitmap.clear();
+    this.bitmap.drawText(t, 0, 0, 32, 32, 'center');
+}
+
+function Window_Result(){
+    this.initialize.apply(this, arguments);
+}
+
+Window_Result.prototype = Object.create(Window_Base.prototype);
+Window_Result.prototype.constructor = Window_Result;
+
+Window_Result.prototype.initialize = function(){
+    var x = Graphics.boxWidth;
+    var y = BirthdayManager.upperFaceSize();
+    var width = Graphics.boxWidth;
+    var height = BirthdayManager.availHeight();
+    Window_Base.prototype.initialize.call(this,x,y,width,height);
+    this.drawText("最高连击数："+$gameVariables.value(18),0,0);
+    this.drawText("消灭机器人数："+$gameVariables.value(19),0,32);
+    this.drawText("-----------------------",0,64);
+    this.drawText("得分："+$gameVariables.value(15),0,96);
+
+}
+
+Window_Result.prototype.update = function(){
+    Window_Base.prototype.update.call(this);
+    if(this.x>0){
+        this.x-=this.x/10;
+    }
+}
+
+BirthdayManager.showResult = function(){
+    this._window_result =new Window_Result();
+    SceneManager._scene.addWindow(this._window_result);
+}
+
+BirthdayManager.hideResult = function(){
+    this._window_result.destroy();
+}
+
+function Sprite_Brand(){
+    this.initialize.apply(this, arguments);
+}
+
+Sprite_Brand.prototype = Object.create(Sprite.prototype);
+Sprite_Brand.prototype.constructor = Sprite_Brand;
+
+Sprite_Brand.prototype.initialize = function(){
+    Sprite.prototype.initialize.call(this);
+    this.bitmap = new Bitmap(Graphics.boxWidth, 32);
+    this.anchor.x = 1;
+    this.x = Graphics.boxWidth;
+}
+
+Sprite_Brand.prototype.drawText = function(t){
+    this.bitmap.clear();
+    this.bitmap.drawText(t,0,0, Graphics.boxWidth, 32, "right");
+}
+
+
+function Sprite_Combo(){
+    this.initialize.apply(this, arguments);
+}
+
+Sprite_Combo.prototype = Object.create(Sprite_Brand.prototype);
+Sprite_Combo.prototype.constructor = Sprite_Combo;
+
+Sprite_Combo.prototype.initialize = function(){
+    Sprite_Brand.prototype.initialize.call(this);
+    this.y = BirthdayManager.upperFaceSize();
+}
+
+Sprite_Combo.prototype.drawCombo = function(num){
+    this.drawText("连击X"+num);
+}
+
+BirthdayManager.showCombo = function(){
+    this._sprite_combo = new Sprite_Combo();
+    SceneManager._scene.addChild(this._sprite_combo);
+}
+
+BirthdayManager.hideCombo = function(){
+    if(this._sprite_combo){
+        this._sprite_combo.destroy();
+        this._sprite_combo = null;
+    }
+}
+
+function Sprite_Score(){
+    this.initialize.apply(this, arguments);
+}
+
+Sprite_Score.prototype = Object.create(Sprite_Brand.prototype);
+Sprite_Score.prototype.constructor = Sprite_Score;
+
+Sprite_Score.prototype.initialize = function(){
+    Sprite_Brand.prototype.initialize.call(this);
+    this.y = BirthdayManager.messY()-32;
+}
+
+Sprite_Score.prototype.drawScore = function(num){
+    this.drawText("得分："+num+" ");
+}
+
+Sprite_Score.prototype.update = function(){
+    Sprite_Brand.prototype.update.call(this);
+    this.drawScore($gameVariables.value(15));
+}
+
+BirthdayManager.showScore = function(){
+    this._sprite_score = new Sprite_Score();
+    SceneManager._scene.addChild(this._sprite_score);
+}
+
+BirthdayManager.hideScore = function(){
+    this._sprite_score.destroy();
+    this._sprite_score = null;
+}
+//--------------------------------------------
+
 BirthdayManager.getTachiRate = function(){
     var xrate = Graphics.boxWidth/375;
     var yrate = Graphics.boxHeight/812;
@@ -257,15 +440,15 @@ SceneManager.setWindowSize = function(){
     this._screenHeight = window.screen.availHeight;
 }
 
-SceneManager.preferableRendererType = function() {
-    if (Utils.isOptionValid('canvas')) {
-        return 'canvas';
-    } else if (Utils.isOptionValid('webgl')) {
-        return 'webgl';
-    } else {
-        return 'canvas';
-    }
-};
+//SceneManager.preferableRendererType = function() {
+//    if (Utils.isOptionValid('canvas')) {
+//        return 'canvas';
+ //   } else if (Utils.isOptionValid('webgl')) {
+//        return 'webgl';
+ //   } else {
+    //    return 'canvas';
+ //   }
+//};
 
 BirthdayManager.temps._Window_TitleCommand_updatePlacement = Window_TitleCommand.prototype.updatePlacement;
 Window_TitleCommand.prototype.updatePlacement = function() {
@@ -293,12 +476,13 @@ Scene_Map.prototype.createAllWindows = function() {
     //this._CakeListWindow = new Window_CakeList(upperFaceSize);
     this.addWindow(this._TaskWindow);
     this.addWindow(this._FaceWindow);
+        this._InfoWindow = new Window_Info();
+    this.addWindow(this._InfoWindow);
     this.addWindow(this._button1);
     this._button1.drawText("1", 7, 5);
     this.addWindow(this._button2);
     this._button2.drawText("2", 7, 5);
-    this._InfoWindow = new Window_Info();
-    this.addWindowToCakeScene(this._InfoWindow);
+
     //this.addWindow(this._CakeListWindow);
 };
 
@@ -483,6 +667,7 @@ BirthdayManager.showInfo = function(){
 }
 
 BirthdayManager.hideInfo = function(){
+    SceneManager._scene._InfoWindow.terminateMessage();
     SceneManager._scene._InfoWindow.hide();
 }
 
@@ -499,6 +684,124 @@ Window_Info.prototype.initialize = function(){
 }
 
 Window_Info.prototype.canStart = function() {
+    if(BirthdayManager.text){
+        return true;
+    }else{
+        return false;  
+    }
+};
+
+
+Window_Info.prototype.isTriggered = function(){
     return false;
+}
+
+BirthdayManager.allText = function(){
+    return BirthdayManager.text
+}
+
+BirthdayManager.startMessage = function(t){
+    SceneManager._scene._InfoWindow.terminateMessage();
+    BirthdayManager.showInfo();
+    BirthdayManager.text = DKTools.Localization.getText(t);
+    //console.log("text: "+BirthdayManager.text);
+    SceneManager._scene._InfoWindow.startMessage();
+}
+
+Window_Info.prototype.startMessage = function() {
+    //this.drawText("hi!",0,0);
+    //console.log(2);
+    this._textState = {};
+    this._textState.index = 0;
+    this._textState.text = this.convertEscapeCharacters(BirthdayManager.allText());
+    //console.log(this._textState);
+    this.newPage(this._textState);
+    this.updatePlacement();
+    this.updateBackground();
+    this.open();
+};
+
+Window_Info.prototype.terminateMessage = function() {
+    this.contents.clear();
+    BirthdayManager.text = null;
+    this._textState = null;
+    this._positionType = 2;
+    this.updatePlacement();
+    this.setBackgroundType(0);
+};
+
+Window_Info.prototype.updateBackground = function() {
+    this._background = 0;
+    this.setBackgroundType(this._background);
+};
+Window_Info.prototype.updatePlacement = function() {
+    this._positionType = 2;
+    if(this._positionType == 1){
+        this.x = 0;
+        this.width = Graphics.boxWidth;
+    }else{
+        this.width = this.windowWidth()
+        this.x = (Graphics.boxWidth - this.windowWidth()+ Graphics.boxWidth*(1/5)) / 2;
+    }
+
+    this.y = this._positionType * (Graphics.boxHeight - this.height) / 2;
+    this._goldWindow.y = this.y > 0 ? 0 : Graphics.boxHeight - this._goldWindow.height;
+};
+
+Window_Info.prototype.updateInput = function() {
+    if (this.isAnySubWindowActive()) {
+        return true;
+    }
+    if (this.pause) {
+        if (this.isTriggered()) {
+            Input.update();
+            this.pause = false;
+            if (!this._textState) {
+                //this.terminateMessage();
+            }
+        }
+        return true;
+    }
+    return false;
+};
+
+Window_Info.prototype.onEndOfText = function() {
+    if (!this.startInput()) {
+        if (!this._pauseSkip) {
+            this.startPause();
+        } else {
+            //this.terminateMessage();
+        }
+    }
+    this._textState = null;
+};
+
+Window_Info.prototype.updateInput = function() {
+    return false;
+};
+
+Window_Info.prototype.update = function() {
+    this.checkToNotClose();
+    Window_Base.prototype.update.call(this);
+    while (!this.isOpening() && !this.isClosing()) {
+        if (this.updateWait()) {
+            //console.log(1);
+            return;
+        } else if (this.updateLoading()) {
+            //console.log(2);
+            return;
+        } else if (this.updateInput()) {
+            //console.log(3);
+            return;
+        } else if (this.updateMessage()) {
+            return;
+        } else if (this.canStart()) {
+            //this.startMessage();
+            return;
+        } else {
+            this.startInput();
+            return;
+        }
+    }
 };
 

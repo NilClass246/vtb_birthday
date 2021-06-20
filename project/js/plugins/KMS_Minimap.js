@@ -1537,7 +1537,8 @@ Spriteset_Map.prototype.update = function()
  * ミニマップの更新
  */
 Spriteset_Map.prototype.updateMinimap = function()
-{
+{   
+    return;
     this._minimap.setWholeOpacity(255 - this._fadeSprite.opacity);
     this._minimap.update();
 };

@@ -1,0 +1,9 @@
+{
+    "Pacman_Fail":"你失败了！\n再试一次吧……",
+    "pacman_sentence1":"随机对话1",
+    "pacman_sentence2":"随机对话2",
+    "pacman_sentence3":"随机对话3",
+    "pacman_sentence4":"随机对话4",
+    "pacman_winning":"12封请柬都送完了！\n从地图两侧离开吧！",
+    "pacman_confirm":"按确认键\n退出结算界面"
+}
