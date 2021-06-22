@@ -904,9 +904,17 @@ Window_Base.prototype.checkWordWrap = function (textState) {
     if (!textState) return false;
     if (!this._wordWrap) return false;
     if (DKTools.Localization._locale == "cn") {
-        var word = textState.text.substring(textState.index, textState.index);
+        var word = textState.text.substring(textState.index, textState.index+1);
+        //if(textState.index<textState.text.length){
+          //var word2 = textState.text.substring(textState.index+1, textState.index+1);
+          //console.log(word);
+          if(word=="，"||word=="。"||word=="？"){
+            return false;
+          }
+        //}
         var size = this.textWidthExCheck(word);
-        return (size + textState.x >= this.wordwrapWidth() - this.textPadding()-this.standardPadding());
+        return (size + textState.x >= this.wordwrapWidth());
+        // - this.textPadding()
     };
     if (textState.text[textState.index] === ' ') {
       var nextSpace = textState.text.indexOf(' ', textState.index + 1);

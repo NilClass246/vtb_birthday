@@ -467,13 +467,16 @@
             SceneManager._scene.addChild(window); // 行儀悪い
 
             var isLeft = Achievement.settings.popupPosition === 'left';
-            var x = isLeft ? 10 : Graphics.width - window.width - 10;
+            var x = isLeft ? 0 : Graphics.width - window.width - 10;
             var y = (function () {
-                var y = 10;
+                var y = BirthdayManager.upperFaceSize()+10;
+                //10;
                 for (var i = 0; i < this._stacks.length; ++i) {
                     if (this._stacks[i].y !== y) return y;
                     y += window.height + 10;
                 }
+
+                //var y = BirthdayManager.upperFaceSize();
                 return y;
             }.bind(this))();
 
@@ -524,7 +527,6 @@
                 });
             }
         };
-
         return new AchievementPopupManager();
     })();
 
@@ -588,6 +590,11 @@
         return Achievement.settings.popupOpacity === -1 ?
             Window_Base.prototype.standardBackOpacity.call(this) : Achievement.settings.popupOpacity;
     };
+
+    Window_AchievementPopup.prototype.update = function(){
+        Window_Base.prototype.update.call(this);
+        //console.log(this);
+    }
 
     Achievement.Window_AchievementPopup = Window_AchievementPopup;
 
@@ -697,8 +704,8 @@
         Scene_MenuBase.prototype.create.call(this);
         this.createHelpWindow();
         this.createAchievementWindow();
-        this._TetrisAchivement = new Window_TetrisAchievement(0, 200, 400, 400);
-        this.addWindow(this._TetrisAchivement);
+        //this._TetrisAchivement = new Window_TetrisAchievement(0, 200, 400, 400);
+        //this.addWindow(this._TetrisAchivement);
     };
 
     Scene_Achievement.prototype.createAchievementWindow = function () {

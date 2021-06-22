@@ -1,11 +1,44 @@
 var BirthdayManager = BirthdayManager || {};
 BirthdayManager.temps = {};
 
-BirthdayManager.TachiWidth = 240;
+BirthdayManager.TachiWidth = 300;
 BirthdayManager.TachiHeight = 540;
 
 BirthdayManager.camera_xoffset = 0;
 BirthdayManager.camera_yoffset = 0;
+
+//点击图标
+BirthdayManager.hasDestinationSprite = true;
+
+Sprite_Destination.prototype.update = function() {
+    Sprite.prototype.update.call(this);
+
+    if ($gameTemp.isDestinationValid()){
+        this.updatePosition();
+        this.updateAnimation();
+        this.visible = true;
+        if(BirthdayManager.hasDestinationSprite){
+            this.visible = true;
+        }else{
+            this.visible = false;
+        }
+    } else {
+        this._frameCount = 0;
+        this.visible = false;
+    }
+};
+
+//bgm
+
+BirthdayManager.acclerateBgm = function(pitch){
+    var b = AudioManager.saveBgm();
+    var bf = AudioManager._bgmBuffer;
+    bf._pitch = (pitch || 0) / 100;
+    if (bf.isPlaying()) {
+        bf.play(bf._sourceNode.loop, b.pos);
+    }
+
+}
 
 //测量
 BirthdayManager.messY = function(){
@@ -30,7 +63,10 @@ BirthdayManager.current_target_list = [];
 BirthdayManager.box_state = [];
 
 BirthdayManager.sokoban_maps = {
-    5: [5,5]
+    5: [5,5],
+    14:[4,6],
+    15:[14,13],
+    16:[9,6]
 };
 
 BirthdayManager.updateBoxState = function(id){
@@ -55,7 +91,9 @@ BirthdayManager.checkAllBoxState = function(){
 }
 
 BirthdayManager.getRandomMapLocation = function(){
-    var id = $gameVariables.value(5);
+    var idlist = [5, 14,15,16]
+    var id = idlist[Math.floor(Math.random()*idlist.length)];
+    $gameVariables.setValue(5,id);
     $gameVariables.setValue(6, this.sokoban_maps[id][0]);
     $gameVariables.setValue(7, this.sokoban_maps[id][1]);
 }
@@ -94,30 +132,54 @@ BirthdayManager.enterCakeScene = function(){
     var theight = this.TachiHeight*trate;
     var twidth = this.TachiWidth*trate;
 
-    var tachi = new Sprite(ImageManager.loadPicture("tachi/Test_Tachi3"));
+    var tachi = new Sprite_CakeTachi();
     tachi.scale.x = trate;
     tachi.scale.y = trate;
-    tachi.y = scene._characterWindow.y+scene._characterWindow.height;
+    var tachiy = scene._characterWindow.y+scene._characterWindow.height;
     //scene.addWindowToCakeScene(tachi);
-    scene._TachiWindow = new Window_Base(0, tachi.y, twidth+8*rate-1, scene._messageWindow.y-tachi.y+1);
-    scene._TachiWindow._windowBackSprite.bitmap = tachi.bitmap;
-    scene._TachiWindow._windowBackSprite.scale.x = trate;
-    scene._TachiWindow._windowBackSprite.scale.y = trate;
+    scene._TachiWindow = new Window_Base(0, tachiy, twidth+8*rate-1, scene._messageWindow.y-tachiy+1);
+    scene._TachiWindow.addChild(tachi);
+    scene._TachiBoundary = new Window_Boundary(0, tachiy, twidth+8*rate-1, scene._messageWindow.y-tachiy+1);
+    //scene._TachiWindow._windowBackSprite.bitmap = tachi.bitmap;
+    //scene._TachiWindow._windowBackSprite.scale.x = trate;
+    //scene._TachiWindow._windowBackSprite.scale.y = trate;
+
 
     scene.addWindowToCakeScene(scene._TachiWindow);
+    scene.addWindow(scene._TachiBoundary);
     scene._CakeListWindow = new Window_CakeList(
         scene._TachiWindow.x+scene._TachiWindow.width
         ,scene._TachiWindow.y
         ,Graphics.boxWidth - scene._TachiWindow.width
         ,scene._TachiWindow.height);
+    console.log(Graphics.boxWidth - scene._TachiWindow.width);
     scene.addWindowToCakeScene(scene._CakeListWindow);
-    BirthdayManager.openCakeSelection();
-    scene._messageWindow.drawText("酱油和青椒更配哦!",5,5)
+    this.openCakeSelection();
+    this.showInfo();
+    //scene._messageWindow.drawText("酱油和青椒更配哦!",5,5)
+
+    this.hasDestinationSprite = false;
 }
 
 BirthdayManager.exitCakeScene = function(){
+    this.hideInfo();
+    this.hasDestinationSprite = true;
 }
 
+//立绘的sprite
+function Sprite_CakeTachi(){
+    this.initialize.apply(this, arguments);
+}
+
+Sprite_CakeTachi.prototype = Object.create(Sprite.prototype);
+Sprite_CakeTachi.prototype.constructor = Sprite_CakeTachi;
+
+Sprite_CakeTachi.prototype.initialize = function(){
+    Sprite.prototype.initialize.call(this);
+    this.bitmap = ImageManager.loadPicture("tachi/koyori_body");
+    this.emoji = new Sprite(ImageManager.loadPicture("tachi/koyori_normal"));
+    this.addChild(this.emoji);
+}
 //文字输入方法
 BirthdayManager.enterCardScene = function(){
     //alert("window.innerWidth: "+window.innerWidth);
@@ -355,7 +417,7 @@ Sprite_Combo.prototype.initialize = function(){
 }
 
 Sprite_Combo.prototype.drawCombo = function(num){
-    this.drawText("连击X"+num);
+    this.drawText("连击X"+num+" ");
 }
 
 BirthdayManager.showCombo = function(){
@@ -412,21 +474,132 @@ BirthdayManager.getTachiRate = function(){
     return rate;
 }
 
-BirthdayManager.showTachi = function(name, position){
+BirthdayManager.already1 = false;
+
+BirthdayManager.already2 = false;
+
+BirthdayManager.pics = 0;
+
+BirthdayManager.tachiOrder = [];
+
+BirthdayManager.arrangeTachi = function(){
+    for(var i=0; i<this.tachiOrder.length-2; i++){
+        this.removeTachi(this.tachiOrder[i]);
+    }
+
+    if(this.tachiOrder.length>=2){
+        this.diminishTachi(this.tachiOrder[this.tachiOrder.length-2],"left");
+    }
+}
+
+BirthdayManager.showTachi = function(id, name, emoji, position){
     //console.log(SceneManager._scene._messageWindow.y);
     var root = "tachi/"
     var picheight = 540;
-    var picwidth = 250;
+    var picwidth = 300;
+    var rate = this.getTachiRate();
+    //console.log(rate);
+    var y = Graphics.boxHeight-(277*rate)-SceneManager._scene._messageWindow.height;
+    var x = Graphics.boxWidth-(162.5*rate);
+    //var seq = this.pics*20;
+    var actualwidth = picwidth*0.65*rate;
+    //var actualheight = picheight*0.65*rate;
+    if(!emoji){
+        emoji = "normal";
+    }
+    if(position=="left"){
+        this.tachiOrder.push(id);
+        this.arrangeTachi();
+        $gameScreen.showPicture(id, root+name, 0, -actualwidth, y, 65*rate, 65*rate, 0, 0);
+        $gameScreen.showPicture(id+1, root+emoji, 0, -actualwidth, y, 65*rate, 65*rate, 0, 0);
+        $gameScreen.movePicture(id, 0, 0, y, 65*rate, 65*rate, 255, 0, 30);
+        $gameScreen.movePicture(id+1, 0, 0, y, 65*rate, 65*rate, 255, 0, 30);
+
+    }else if(position =="right"){
+        if(!BirthdayManager.already2){
+            $gameScreen.showPicture(id, root+name, 0, x+actualwidth, y, 65*rate, 65*rate, 0, 0);
+            $gameScreen.showPicture(id+1, root+emoji, 0, x+actualwidth, y, 65*rate, 65*rate, 0, 0);
+            $gameScreen.movePicture(id, 0, x, y, 65*rate, 65*rate, 255, 0, 30);
+            $gameScreen.movePicture(id+1, 0, x, y, 65*rate, 65*rate, 255, 0, 30);
+            BirthdayManager.already2 = true;
+        }else{
+            $gameScreen.showPicture(id, root+name, 0, x, y, 65*rate, 65*rate, 255, 0);
+            $gameScreen.showPicture(id+1, root+emoji, 0, x, y, 65*rate, 65*rate, 255, 0);
+        }
+    }
+}
+
+BirthdayManager.changeEmoji = function(id, emoji, position){
+    var rate = this.getTachiRate();
+    //console.log(rate);
+    var y = Graphics.boxHeight-(277*rate)-SceneManager._scene._messageWindow.height;
+    var x = Graphics.boxWidth-(162.5*rate);
+    if(position=="left"&&this.already1&&this.tachiName1){
+        $gameScreen.showPicture(id+2, root+emoji, 0, 0, y, 65*rate, 65*rate, 255, 0);
+    }
+    if(position=="right"&&this.already2&&this.tachiName2){
+        $gameScreen.showPicture(id+2, root+emoji, 0, 0, y, 65*rate, 65*rate, 255, 0);
+    }
+}
+
+BirthdayManager.deactivateTachi = function(id, position){
     var rate = this.getTachiRate();
     //console.log(rate);
     var y = Graphics.boxHeight-(277*rate)-SceneManager._scene._messageWindow.height;
     var x = Graphics.boxWidth-(162.5*rate);
     if(position=="left"){
-        $gameScreen.showPicture(1, root+name, 0, 0, y, 65*rate, 65*rate, 255, 0);
-    }else if(position =="right"){
-        $gameScreen.showPicture(2, root+name, 0, x, y, 65*rate, 65*rate, 255, 0);
+        $gameScreen.movePicture(id, 0, +50*rate, y, 65*rate, 65*rate, 195, 0, 30);
+        $gameScreen.movePicture(id+1, 0, +50*rate, y, 65*rate, 65*rate, 195, 0, 30);
+    }
+    if(position=="right"){
+        $gameScreen.movePicture(id, 0, x+50*rate, y, 65*rate, 65*rate, 195, 0, 30);
+        $gameScreen.movePicture(id+1, 0, x+50*rate, y, 65*rate, 65*rate, 195, 0, 30);
     }
 }
+
+BirthdayManager.diminishTachi = function(id, position){
+    var rate = this.getTachiRate();
+    //console.log(rate);
+    var y = Graphics.boxHeight-(277*rate)-SceneManager._scene._messageWindow.height;
+    var x = Graphics.boxWidth-(162.5*rate);
+    if(position=="left"){
+        $gameScreen.movePicture(id, 0, -100*rate, y, 65*rate, 65*rate, 0, 0, 30);
+        $gameScreen.movePicture(id+1, 0, -100*rate, y, 65*rate, 65*rate, 0, 0, 30);
+    }
+    if(position=="right"){
+        $gameScreen.movePicture(id, 0, x+100*rate, y, 65*rate, 65*rate, 0, 0, 30);
+        $gameScreen.movePicture(id+1, 0, x+100*rate, y, 65*rate, 65*rate, 0, 0, 30);
+    }
+}
+
+BirthdayManager.removeTachi = function(id){
+    $gameScreen.erasePicture(id);
+    $gameScreen.erasePicture(id+1);
+}
+
+BirthdayManager.removeAllTachi = function(){
+    for(var i=0; i<this.tachiOrder.length; i++){
+        var id = this.tachiOrder[i];
+        $gameScreen.erasePicture(id);
+        $gameScreen.erasePicture(id+1);
+    }
+}
+
+BirthdayManager.activateTachi = function(id, position){
+    var rate = this.getTachiRate();
+    //console.log(rate);
+    var y = Graphics.boxHeight-(277*rate)-SceneManager._scene._messageWindow.height;
+    var x = Graphics.boxWidth-(162.5*rate);
+    if(position=="left"&&this.already1){
+        $gameScreen.movePicture(id, 0, 0, y, 65*rate, 65*rate, 255, 0, 30);
+        $gameScreen.movePicture(id+1, 0, 0, y, 65*rate, 65*rate, 255, 0, 30);
+    }
+    if(position=="right"&&this.already2){
+        $gameScreen.movePicture(id, 0, x, y, 65*rate, 65*rate, 255, 0, 30);
+        $gameScreen.movePicture(id+1, 0, x, y, 65*rate, 65*rate, 255, 0, 30);
+    }
+}
+
 
 BirthdayManager.setTaskText = function(txt){
     SceneManager._scene._TaskWindow.drawText(txt, 0, 0)
@@ -546,6 +719,12 @@ Window_Face.prototype.change = function(name){
 }
 
 //蛋糕编辑窗口
+BirthdayManager.allCakes = {
+    "12345": {
+        image: "cake2"
+    }
+}
+
 BirthdayManager.openCakeSelection = function(){
     var cw = SceneManager._scene._CakeListWindow;
     cw.visible = true;
@@ -569,16 +748,109 @@ Window_CakeList.prototype.constructor = Window_CakeList;
 
 Window_CakeList.prototype.initialize = function(x, y, width, height){
     var message_window = SceneManager._scene._messageWindow;
-    Window_ItemList.prototype.initialize.call(this, x, y, width, height-this.fittingHeight(1)+1);
+    Window_ItemList.prototype.initialize.call(this, x, y, width, height-this.fittingHeight(1));
     this._confirm_window = new Window_Confirm(0, height-this.fittingHeight(1), width, this.fittingHeight(1));
+    this._confirm_window.setHandler("add", this.addToSelection.bind(this));
+    this._confirm_window.setHandler("remove", this.removeFromSelection.bind(this));
+    this._confirm_window.setHandler("finish", this.finishSelection.bind(this));
+    this._finalConfirm_window = new Window_FinalConfirm(0, 0, width, height);
+    this._finalConfirm_window.setHandler("return", this.returnToSelection.bind(this));
+    
     this.addChild(this._confirm_window);
+    this.addChild(this._finalConfirm_window);
     //this.drawText("temp", 0, 0);
     this._category = "item";
     this.visible = false;
+    this._selectionList = [];
     this.deactivate();
 }
 
-Window_ItemList.prototype.maxCols = function() {
+Window_CakeList.prototype.drawItem = function(index) {
+    var item = this._data[index];
+    if (item) {
+        //console.log(item);
+        var numberWidth = this.numberWidth();
+        var rect = this.itemRect(index);
+        rect.width -= this.textPadding();
+        this.changePaintOpacity(this.isEnabled(item));
+        this.drawItemName(item, rect.x, rect.y, rect.width - numberWidth);
+        //this.drawItemNumber(item, rect.x, rect.y, rect.width);
+        if(this._selectionList.contains(index)){
+            this.contents.blt(ImageManager.loadSystem("selected"),0,0,32,32,this.width-this.padding*2-32, rect.y);
+        }
+        this.changePaintOpacity(1);
+    }
+};
+
+Window_CakeList.prototype.itemRect = function(index) {
+    var rect = new Rectangle();
+    var maxCols = this.maxCols();
+    rect.width = this.itemWidth();
+    rect.height = this.itemHeight();
+    rect.x = index % maxCols * (rect.width + this.spacing()) - this._scrollX;
+    rect.y = Math.floor(index / maxCols) * rect.height - this._scrollY +(this.height-Math.floor(this.height/rect.height)*rect.height)/2;
+    //console.log((this.height-Math.floor(this.height/rect.height)*rect.height)/2);
+    return rect;
+};
+
+Window_CakeList.prototype.drawItemName = function(item, x, y, width) {
+    width = width || 312;
+    if (item) {
+        var iconBoxWidth = Window_Base._iconWidth + 4;
+        this.resetTextColor();
+        //this.drawIcon(item.iconIndex, x + 2, y + 2);
+        this.drawText(item.name, x +2, y, width);
+        //this.drawText(item.name, x + iconBoxWidth, y, width - iconBoxWidth);
+    }
+};
+
+Window_CakeList.prototype.addToSelection = function(){
+    if(!this._selectionList.contains(this.index())){
+        this._selectionList.push(this.index());
+    }
+    this.refresh();
+    this._confirm_window.activate();
+}
+
+Window_CakeList.prototype.removeFromSelection = function(){
+    for(var i =0; i<this._selectionList.length; i++){
+        if(this._selectionList[i] == this.index()){
+            this._selectionList.splice(i,1);
+        }
+    }
+    this.refresh();
+    this._confirm_window.activate();
+}
+
+Window_CakeList.prototype.finishSelection = function(){
+    this._selectionList.sort();
+    var key = "";
+    for(var i = 0; i<this._selectionList.length; i++){
+        key+= this._data[this._selectionList[i]].name;
+    }
+
+    var scene =SceneManager._scene;
+    if(BirthdayManager.allCakes[key]){
+        scene._cakeDisplayWindow.showCake(BirthdayManager.allCakes[key].image);
+    }else{
+        scene._cakeDisplayWindow.showCake("cake1");
+    }
+    this.deactivate();
+    this._finalConfirm_window.showConfirm();
+    this._finalConfirm_window.activate();
+}
+
+Window_CakeList.prototype.returnToSelection = function(){
+    this._finalConfirm_window.deactivate();
+    this._finalConfirm_window.hideConfirm();
+    this.activate();
+    this._confirm_window.activate();
+    var scene =SceneManager._scene;
+    scene._cakeDisplayWindow.hideCake();
+}
+
+
+Window_CakeList.prototype.maxCols = function() {
     return 1;
 };
 
@@ -600,17 +872,96 @@ Window_Confirm.prototype.initialize = function(x, y, width, height){
 }
 
 Window_Confirm.prototype.maxCols = function(){
-    return 1;
+    return 3;
 }
 
 Window_Confirm.prototype.makeCommandList = function(){
-    this.addCommand("确定", "conf");
+    this.addCommand("加入", "add");
+    this.addCommand("取出","remove");
+    this.addCommand("完成","finish");
 }
+
+Window_Confirm.prototype.textPadding = function(){
+    return 2;
+}
+
+//Window_Confirm.prototype.itemRectForText = function(index) {
+    //var rect = this.itemRect(index);
+    //rect.x += this.textPadding();
+    //rect.width -= this.textPadding() * 2;
+    //return rect;
+//};
 
 Window_Confirm.prototype.itemTextAlign = function(){
     return "center";
 }
 
+//最终确认
+function Window_FinalConfirm(){
+    this.initialize.apply(this, arguments);
+}
+
+Window_FinalConfirm.prototype = Object.create(Window_Command.prototype);
+Window_FinalConfirm.prototype.constructor = Window_FinalConfirm;
+
+Window_FinalConfirm.prototype.initialize = function(x, y, width, height){
+    this.clearCommandList();
+    this.makeCommandList();
+    this.finalX = x;
+    this.initialX = x+width;
+    Window_Selectable.prototype.initialize.call(this, this.initialX, y, width, height);
+    this.isShowing = false;
+    this.refresh();
+}
+
+Window_FinalConfirm.prototype.itemRect = function(index) {
+    var rect = new Rectangle();
+    var maxCols = this.maxCols();
+    rect.width = this.itemWidth();
+    rect.height = this.itemHeight();
+    rect.x = index % maxCols * (rect.width + this.spacing()) - this._scrollX;
+    rect.y = this.height-this.padding*2-rect.height;
+    //Math.floor(index / maxCols) * rect.height - this._scrollY;
+    return rect;
+};
+
+Window_FinalConfirm.prototype.showConfirm = function(){
+    this.isShowing = true;
+}
+
+Window_FinalConfirm.prototype.hideConfirm = function(){
+    this.isShowing = false;
+}
+
+Window_FinalConfirm.prototype.update = function(){
+    Window_Command.prototype.update.call(this);
+    if(this.isShowing){
+        if(this.x>this.finalX){
+            this.x -= (this.x-this.finalX)/10
+        }
+    }else{
+        if(this.x<this.initialX){
+            this.x+=(this.initialX-this.x)/10
+        }
+    }
+}
+
+Window_FinalConfirm.prototype.makeCommandList = function(){
+    this.addCommand("确认","confirm");
+    this.addCommand("返回","return");
+}
+
+Window_FinalConfirm.prototype.maxCols = function(){
+    return 2;
+}
+
+Window_FinalConfirm.prototype.refresh = function() {
+    this.clearCommandList();
+    this.makeCommandList();
+    this.createContents();
+    Window_Selectable.prototype.refresh.call(this);
+    this.drawTextEx("{finalConfirm_Text}",0,0);
+};
 
 //边框窗口
 function Window_Boundary(){
@@ -637,28 +988,61 @@ Window_CakeDisplay.prototype.initialize = function(x, y, width, height){
     var bheight = 472;
     var rate = width/bwidth;
     Window_Base.prototype.initialize.call(this, x, y, width, height);
-    this._cakeSprite = new Sprite(ImageManager.loadPicture("cakes/cake2"));
-    this._cakeSprite.anchor.x = 0.5;
-    this._cakeSprite.anchor.y = 0.5;
-    this._cakeSprite.x = width/2;
-    this._cakeSprite.y = height*(2/3);
-    var crate = 1;
-    this._cakeSprite.scale.x = crate;
-    this._cakeSprite.scale.y = crate;
+
     //this._cakeSprite.
     this._windowBackSprite.bitmap = ImageManager.loadPicture("图");
-
-    this.addChild(this._cakeSprite);
     //this._windowBackSprite.setFrame(0, bheight-height, width, height);
     this._windowBackSprite.scale.x = rate;
     this._windowBackSprite.y = -(bheight-height);
+    this.showingCake = false;
 
+}
+
+Window_CakeDisplay.prototype.showCake = function(cname){
+    var crate = Graphics.boxWidth/375;
+    if(crate>=2){
+        crate = 1;
+    }
+    this._cakeSprite = new Sprite(ImageManager.loadPicture("cakes/"+cname));
+    this._cakeSprite.anchor.x = 0.5;
+    this._cakeSprite.anchor.y = 0.5;
+    this._cakeSprite.x = this.width/2;
+    this._cakeSprite.y = this.height-68*crate;
+    this._cakeSprite.scale.x = crate;
+    this._cakeSprite.scale.y = crate;
+    this._cakeSprite.opacity = 0;
+    this.addChild(this._cakeSprite)
+    this.showingCake =true;
+}
+
+Window_CakeDisplay.prototype.update = function(){
+    Window_Base.prototype.update.call(this);
+    if(this._cakeSprite){
+        if(this.showingCake){
+            if(this._cakeSprite.opacity<255){
+                this._cakeSprite.opacity+=10;
+            }
+        }else{
+            if(this._cakeSprite.opacity>0){
+                this._cakeSprite.opacity-=10;
+            }
+        }
+    }
+}
+
+Window_CakeDisplay.prototype.hideCake = function(){
+    this.showingCake = false;
 }
 
 //测试
 BirthdayManager.testMethod = function(){
     var scene = SceneManager._scene;
 }
+//信息窗口的变动
+
+Window_Message.prototype.standardFontSize = function() {
+    return 18;
+};
 
 //覆盖性信息窗口
 
@@ -805,3 +1189,23 @@ Window_Info.prototype.update = function() {
     }
 };
 
+//=======================
+function Sprite_Character2() {
+    this.initialize.apply(this, arguments);
+}
+
+Sprite_Character2.prototype = Object.create(Sprite_Character.prototype);
+Sprite_Character2.prototype.constructor = Sprite_Character2;
+
+Sprite_Character2.prototype.createShadowSet = function(){
+    return;
+}
+
+Sprite_Character2.prototype.update_character_shadow = function(){
+    return;
+}
+
+Sprite_Character2.prototype.updatePosition = function() {
+    this.x = 0;
+    this.y = 0;
+};

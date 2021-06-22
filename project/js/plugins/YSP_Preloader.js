@@ -21,7 +21,7 @@ ysp.Preloader.Config = {
 // GLOBAL Preload, will be preloaded when start the game
 ysp.Preloader.GLOBAL = {
     IMAGES: [
-
+        'system/selected'
     ],
 
     VIDEOS: [

@@ -38,8 +38,11 @@ Sprite_Character.prototype.initialize = function(character) {
         this._temperycharacter = character;
 
         if ((character instanceof Game_Player)||(character instanceof Game_Follower)){
-
-                this.createShadowSet();
+                if(character instanceof Game_Player){
+                    this.createShadowSet(true);
+                }else{
+                    this.createShadowSet(false);
+                }
 
                 this._showShadow = true;
 
@@ -47,7 +50,7 @@ Sprite_Character.prototype.initialize = function(character) {
 
         if ((character instanceof Game_Event) && (character.event().name.indexOf("Sh")>=0)){
 
-                this.createShadowSet();
+                this.createShadowSet(false);
 
                 this._showShadow = true;
 
@@ -56,7 +59,7 @@ Sprite_Character.prototype.initialize = function(character) {
 };
 
  
-Sprite_Character.prototype.createShadowSet = function() {
+Sprite_Character.prototype.createShadowSet = function(isplayer) {
 
     this._shadowSprite = new Sprite();
 
@@ -76,6 +79,32 @@ Sprite_Character.prototype.createShadowSet = function() {
 
     this.addChild(this._shadowSprite);
 
+    if(isplayer){
+        this._charTemp = new Sprite_Character2($gamePlayer);
+        this._charTemp.x = 2;
+        this._runeSprite = new Sprite();
+        this._runeSprite.bitmap = ImageManager.loadSystem('Rune');
+
+        this._runeSprite.x = this.x;
+
+        this._runeSprite.y = this.y+8;
+
+        this._runeSprite.anchor.x = 0.5;
+
+        this._runeSprite.anchor.y = 1;
+        this._runeSprite.scale.x = 1;
+        this._runeSprite.scale.y = 1;
+
+        this._runeSprite.z = -1;
+
+        //this._runeSprite.mask = this;
+
+        this.addChild(this._runeSprite);
+        this.addChild(this._charTemp);
+
+        this._runeSprite.visible = false;
+        this._charTemp.visible=false;
+    }
 }        
 
  
@@ -89,11 +118,21 @@ Sprite_Character.prototype.update_character_shadow = function() {
 
         this._shadowSprite.visible = (this._characterName != "");
 
+        if(this._runeSprite){
+            if(BirthdayManager.showRune){
+                this._runeSprite.visible = true;
+                this._charTemp.visible=true;
+            }else{
+                this._runeSprite.visible = false;
+                this._charTemp.visible=false;
+            }
+        }
+
         if (this._lastone != this._shadowx){
 
         this._lastone = this._shadowx;
 
-        console.log(this._shadowx);
+        //console.log(this._shadowx);
 
         }
 

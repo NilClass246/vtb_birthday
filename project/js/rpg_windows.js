@@ -1992,7 +1992,7 @@ Window_ItemList.prototype.drawItem = function(index) {
         rect.width -= this.textPadding();
         this.changePaintOpacity(this.isEnabled(item));
         this.drawItemName(item, rect.x, rect.y, rect.width - numberWidth);
-        //this.drawItemNumber(item, rect.x, rect.y, rect.width);
+        this.drawItemNumber(item, rect.x, rect.y, rect.width);
         this.changePaintOpacity(1);
     }
 };
