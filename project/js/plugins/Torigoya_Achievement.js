@@ -469,7 +469,7 @@
             var isLeft = Achievement.settings.popupPosition === 'left';
             var x = isLeft ? 0 : Graphics.width - window.width - 10;
             var y = (function () {
-                var y = BirthdayManager.upperFaceSize()+10;
+                var y = BirthdayManager.upperFaceSize();
                 //10;
                 for (var i = 0; i < this._stacks.length; ++i) {
                     if (this._stacks[i].y !== y) return y;

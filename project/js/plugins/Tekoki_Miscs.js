@@ -41,8 +41,9 @@ BirthdayManager.acclerateBgm = function(pitch){
 }
 
 //测量
+
 BirthdayManager.messY = function(){
-    return Graphics.boxHeight - (4 * 36 + 18 * 2);
+    return Graphics.boxHeight - (this.messH());
 }
 
 BirthdayManager.messH = function(){
@@ -65,7 +66,7 @@ BirthdayManager.box_state = [];
 BirthdayManager.sokoban_maps = {
     5: [5,5],
     14:[4,6],
-    15:[14,13],
+    15:[7,8],
     16:[9,6]
 };
 
@@ -127,19 +128,25 @@ BirthdayManager.enterCakeScene = function(){
         ,Graphics.boxWidth-scene._characterWindow.width
         ,scene._characterWindow.height);
     scene.addWindowToCakeScene(scene._cakeDisplayWindow);
+
+    var tachiy = scene._characterWindow.y+scene._characterWindow.height;
     var rate = this.getTachiRate();
-    var trate = 0.65*rate;
+    var trate = 0.65*((scene._messageWindow.y-tachiy)/293);
+    //0.65*rate;
     var theight = this.TachiHeight*trate;
     var twidth = this.TachiWidth*trate;
+    
 
     var tachi = new Sprite_CakeTachi();
+    this._caketachi = tachi;
     tachi.scale.x = trate;
     tachi.scale.y = trate;
-    var tachiy = scene._characterWindow.y+scene._characterWindow.height;
     //scene.addWindowToCakeScene(tachi);
-    scene._TachiWindow = new Window_Base(0, tachiy, twidth+8*rate-1, scene._messageWindow.y-tachiy+1);
+    scene._TachiWindow = new Window_Base(0, tachiy, twidth+8*rate, scene._messageWindow.y-tachiy);
+    console.log(scene._messageWindow.y-tachiy);
+
     scene._TachiWindow.addChild(tachi);
-    scene._TachiBoundary = new Window_Boundary(0, tachiy, twidth+8*rate-1, scene._messageWindow.y-tachiy+1);
+    scene._TachiBoundary = new Window_Boundary(0, tachiy, twidth+8, scene._messageWindow.y-tachiy);
     //scene._TachiWindow._windowBackSprite.bitmap = tachi.bitmap;
     //scene._TachiWindow._windowBackSprite.scale.x = trate;
     //scene._TachiWindow._windowBackSprite.scale.y = trate;
@@ -152,7 +159,7 @@ BirthdayManager.enterCakeScene = function(){
         ,scene._TachiWindow.y
         ,Graphics.boxWidth - scene._TachiWindow.width
         ,scene._TachiWindow.height);
-    console.log(Graphics.boxWidth - scene._TachiWindow.width);
+    //console.log(Graphics.boxWidth - scene._TachiWindow.width);
     scene.addWindowToCakeScene(scene._CakeListWindow);
     this.openCakeSelection();
     this.showInfo();
@@ -178,6 +185,12 @@ Sprite_CakeTachi.prototype.initialize = function(){
     Sprite.prototype.initialize.call(this);
     this.bitmap = ImageManager.loadPicture("tachi/koyori_body");
     this.emoji = new Sprite(ImageManager.loadPicture("tachi/koyori_normal"));
+    this.addChild(this.emoji);
+}
+
+Sprite_CakeTachi.prototype.changeEmoji = function(name){
+    this.removeChild(this.emoji);
+    this.emoji = new Sprite(ImageManager.loadPicture("tachi/"+name));
     this.addChild(this.emoji);
 }
 //文字输入方法
@@ -483,12 +496,20 @@ BirthdayManager.pics = 0;
 BirthdayManager.tachiOrder = [];
 
 BirthdayManager.arrangeTachi = function(){
-    for(var i=0; i<this.tachiOrder.length-2; i++){
-        this.removeTachi(this.tachiOrder[i]);
+    if(!this.delayDisappear){
+        for(var i=0; i<this.tachiOrder.length-2; i++){
+            this.removeTachi(this.tachiOrder[i]);
+        }
     }
-
     if(this.tachiOrder.length>=2){
-        this.diminishTachi(this.tachiOrder[this.tachiOrder.length-2],"left");
+        for(var i = 0; i< this.tachiOrder.length-1; i++){
+            if(this.delayDisappear){
+                this.deactivateTachi(this.tachiOrder[i],"left")
+                this.delayDisappear=false;
+            }else{
+                this.diminishTachi(this.tachiOrder[i],"left");
+            }
+        }
     }
 }
 
@@ -548,12 +569,12 @@ BirthdayManager.deactivateTachi = function(id, position){
     var y = Graphics.boxHeight-(277*rate)-SceneManager._scene._messageWindow.height;
     var x = Graphics.boxWidth-(162.5*rate);
     if(position=="left"){
-        $gameScreen.movePicture(id, 0, +50*rate, y, 65*rate, 65*rate, 195, 0, 30);
-        $gameScreen.movePicture(id+1, 0, +50*rate, y, 65*rate, 65*rate, 195, 0, 30);
+        $gameScreen.movePicture(id, 0, 50*rate, y, 65*rate, 65*rate, 255, 0, 30);
+        $gameScreen.movePicture(id+1, 0, 50*rate, y, 65*rate, 65*rate, 255, 0, 30);
     }
     if(position=="right"){
-        $gameScreen.movePicture(id, 0, x+50*rate, y, 65*rate, 65*rate, 195, 0, 30);
-        $gameScreen.movePicture(id+1, 0, x+50*rate, y, 65*rate, 65*rate, 195, 0, 30);
+        $gameScreen.movePicture(id, 0, x+50*rate, y, 65*rate, 65*rate, 255, 0, 30);
+        $gameScreen.movePicture(id+1, 0, x+50*rate, y, 65*rate, 65*rate, 255, 0, 30);
     }
 }
 
@@ -776,7 +797,8 @@ Window_CakeList.prototype.drawItem = function(index) {
         this.drawItemName(item, rect.x, rect.y, rect.width - numberWidth);
         //this.drawItemNumber(item, rect.x, rect.y, rect.width);
         if(this._selectionList.contains(index)){
-            this.contents.blt(ImageManager.loadSystem("selected"),0,0,32,32,this.width-this.padding*2-32, rect.y);
+            var size = 20
+            this.contents.blt(ImageManager.loadSystem("selected"),0,0,size,size,this.width-this.padding*2-size, rect.y+(rect.height-size)/2);
         }
         this.changePaintOpacity(1);
     }
@@ -838,6 +860,7 @@ Window_CakeList.prototype.finishSelection = function(){
     this.deactivate();
     this._finalConfirm_window.showConfirm();
     this._finalConfirm_window.activate();
+    BirthdayManager._caketachi.changeEmoji("koyori_v");
 }
 
 Window_CakeList.prototype.returnToSelection = function(){
@@ -847,7 +870,31 @@ Window_CakeList.prototype.returnToSelection = function(){
     this._confirm_window.activate();
     var scene =SceneManager._scene;
     scene._cakeDisplayWindow.hideCake();
+    BirthdayManager._caketachi.changeEmoji("koyori_normal");
 }
+
+Window_CakeList.prototype.returnToFuture = function(){
+}
+
+Window_CakeList.prototype.select = function(index) {
+    //console.log(1);
+    this._index = index;
+    this._stayCount = 0;
+    this.ensureCursorVisible();
+    this.updateCursor();
+    this.callUpdateHelp();
+
+    if(index>=0&&!this.reselected){
+        BirthdayManager.startMessage(this._data[index].description); 
+    }
+    this.reselected=false;
+};
+
+Window_Selectable.prototype.reselect = function() {
+    this.reselected = true;
+    this.select(this._index);
+};
+
 
 
 Window_CakeList.prototype.maxCols = function() {
@@ -882,7 +929,7 @@ Window_Confirm.prototype.makeCommandList = function(){
 }
 
 Window_Confirm.prototype.textPadding = function(){
-    return 2;
+    return 0;
 }
 
 //Window_Confirm.prototype.itemRectForText = function(index) {
@@ -1041,7 +1088,19 @@ BirthdayManager.testMethod = function(){
 //信息窗口的变动
 
 Window_Message.prototype.standardFontSize = function() {
-    return 18;
+    return 19;
+};
+
+Window_Base.prototype.standardFontSize = function() {
+    return 19;
+};
+
+Window_Message.prototype.windowHeight = function() {
+    return this.fittingHeight(4);
+};
+
+Window_Message.prototype.numVisibleRows = function() {
+    return 5;
 };
 
 //覆盖性信息窗口
@@ -1087,7 +1146,7 @@ BirthdayManager.allText = function(){
 BirthdayManager.startMessage = function(t){
     SceneManager._scene._InfoWindow.terminateMessage();
     BirthdayManager.showInfo();
-    BirthdayManager.text = DKTools.Localization.getText(t);
+    BirthdayManager.text = DKTools.Localization.getText("<WordWrap>"+t);
     //console.log("text: "+BirthdayManager.text);
     SceneManager._scene._InfoWindow.startMessage();
 }
