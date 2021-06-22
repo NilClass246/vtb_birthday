@@ -143,7 +143,7 @@ BirthdayManager.enterCakeScene = function(){
     tachi.scale.y = trate;
     //scene.addWindowToCakeScene(tachi);
     scene._TachiWindow = new Window_Base(0, tachiy, twidth+8*rate, scene._messageWindow.y-tachiy);
-    console.log(scene._messageWindow.y-tachiy);
+    //console.log(scene._messageWindow.y-tachiy);
 
     scene._TachiWindow.addChild(tachi);
     scene._TachiBoundary = new Window_Boundary(0, tachiy, twidth+8, scene._messageWindow.y-tachiy);
@@ -169,8 +169,15 @@ BirthdayManager.enterCakeScene = function(){
 }
 
 BirthdayManager.exitCakeScene = function(){
+    var scene = SceneManager._scene;
     this.hideInfo();
     this.hasDestinationSprite = true;
+
+    scene._characterWindow.destroy();
+    scene._cakeDisplayWindow.destroy();
+    scene._TachiWindow.destroy();
+    scene._TachiBoundary.destroy();
+    scene._CakeListWindow.destory();
 }
 
 //立绘的sprite
@@ -274,13 +281,13 @@ BirthdayManager.possible_location_list = [
 ];
 
 BirthdayManager.renderMail = function(){
-    for(var i =0; i<12; i++){
+    for(var i =0; i<8; i++){
         var index = Math.floor(Math.random()*this.possible_location_list.length);
         var loc = this.possible_location_list.slice(index, index+1);
         $gameMap.event(12+i).setPosition(loc[0][0], loc[0][1]);
     }
     this.possible_location_list = [
-        [4,5],[5,5],[6,5],[7,5],[8,5],[9,5],[10,5],[11,5],[13,5],[14,5],[15,5],[16,5],[17,5],[18,5],[19,5],[20,5],
+        [5,5],[6,5],[7,5],[8,5],[9,5],[10,5],[11,5],[13,5],[14,5],[15,5],[16,5],[17,5],[18,5],[19,5],
         [4,6],[7,6],[11,6],[13,6],[17,6],[20,6],
         [4,7],[5,7],[6,7],[7,7],[8,7],[9,7],[10,7],[11,7],[12,7],[13,7],[14,7],[15,7],[16,7],[17,7],[18,7],[19,7],[20,7],
         [4,8],[7,8],[9,8],[15,8],[17,8],[20,8],
@@ -298,7 +305,7 @@ BirthdayManager.renderMail = function(){
         [5,20],[7,20],[9,20],[15,20],[17,20],[19,20],
         [4,21],[5,21],[6,21],[7,21],[9,21],[10,21],[11,21],[13,21],[14,21],[15,21],[17,21],[18,21],[19,21],[20,21],
         [4,22],[11,22],[13,22],[20,22],
-        [4,23],[5,23],[6,23],[7,23],[8,23],[9,23],[10,23],[11,23],[12,23],[13,23],[14,23],[15,23],[16,23],[17,23],[18,23],[19,23],[20,23]
+        [5,23],[6,23],[7,23],[8,23],[9,23],[10,23],[11,23],[12,23],[13,23],[14,23],[15,23],[16,23],[17,23],[18,23],[19,23]
     ];
 }
 
@@ -623,6 +630,7 @@ BirthdayManager.activateTachi = function(id, position){
 
 
 BirthdayManager.setTaskText = function(txt){
+    SceneManager._scene._TaskWindow.contents.clear();
     SceneManager._scene._TaskWindow.drawText(txt, 0, 0)
 }
 
@@ -726,17 +734,27 @@ Window_Face.prototype.initialize = function(upperFaceSize){
     this._faceSprite.x+=18;
     this._faceSprite.y+=18;
     this.addChild(this._faceSprite);
-    this.change("mea");
+    this.change("koyori");
 }
 
 Window_Face.prototype.change = function(name){
     switch(name){
         case "mea":
-            this._faceSprite.bitmap = ImageManager.loadFace("face");
-            this._faceSprite.scale.x = (this.width-36) / 144;
-            this._faceSprite.scale.y = (this.height-36) / 144;
+            this._faceSprite.bitmap = ImageManager.loadFace("mea");
             break;
+        case "koyori":
+            this._faceSprite.bitmap = ImageManager.loadFace("koyori");
+            break;
+        case "noe":
+            this._faceSprite.bitmap = ImageManager.loadFace("noe");
+            break
+        case "mashiro":
+            this._faceSprite.bitmap = ImageManager.loadFace("mashiro");
+            break
     }
+
+    this._faceSprite.scale.x = (this.width-36) / 144;
+    this._faceSprite.scale.y = (this.height-36) / 144;
 }
 
 //蛋糕编辑窗口
@@ -776,6 +794,7 @@ Window_CakeList.prototype.initialize = function(x, y, width, height){
     this._confirm_window.setHandler("finish", this.finishSelection.bind(this));
     this._finalConfirm_window = new Window_FinalConfirm(0, 0, width, height);
     this._finalConfirm_window.setHandler("return", this.returnToSelection.bind(this));
+    this._finalConfirm_window.setHandler("confirm", this.returnToFuture.bind(this));
     
     this.addChild(this._confirm_window);
     this.addChild(this._finalConfirm_window);
@@ -847,9 +866,13 @@ Window_CakeList.prototype.removeFromSelection = function(){
 Window_CakeList.prototype.finishSelection = function(){
     this._selectionList.sort();
     var key = "";
+    var keyNum = 0;
     for(var i = 0; i<this._selectionList.length; i++){
         key+= this._data[this._selectionList[i]].name;
+        keyNum+=1;
     }
+
+    BirthdayManager.cakeKey = key;
 
     var scene =SceneManager._scene;
     if(BirthdayManager.allCakes[key]){
@@ -874,6 +897,7 @@ Window_CakeList.prototype.returnToSelection = function(){
 }
 
 Window_CakeList.prototype.returnToFuture = function(){
+    $gameSwitches.setValue(21, true);
 }
 
 Window_CakeList.prototype.select = function(index) {
