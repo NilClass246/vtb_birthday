@@ -7,6 +7,75 @@ BirthdayManager.TachiHeight = 540;
 BirthdayManager.camera_xoffset = 0;
 BirthdayManager.camera_yoffset = 0;
 
+BirthdayManager.windowSkin = "Window";
+
+//成就备份
+BirthdayManager.getBackUpCode = function(){
+    
+}
+
+//选项变更
+Window_Options.prototype.addVolumeOptions = function() {
+    return;
+};
+
+BirthdayManager.temps.Window_Options_prototype_makeCommandList = Window_Options.prototype.makeCommandList;
+Window_Options.prototype.makeCommandList = function() {
+    BirthdayManager.temps.Window_Options_prototype_makeCommandList.call(this);
+    this.addCommand("{return}", "return");
+};
+BirthdayManager.temps.Window_Options_prototype_drawItem = Window_Options.prototype.drawItem;
+Window_Options.prototype.drawItem = function(index) {
+    if(this.commandName(index)=="{return}"){
+        var rect = this.itemRectForText(index);
+        var statusWidth = this.statusWidth();
+        var titleWidth = rect.width - statusWidth;
+        this.resetTextColor();
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.drawText(this.commandName(index), rect.x, rect.y, titleWidth, 'left');
+        //this.drawText(this.statusText(index), titleWidth, rect.y, statusWidth, 'right');
+    }else{
+        BirthdayManager.temps.Window_Options_prototype_drawItem.call(this, index);
+    }
+};
+
+BirthdayManager.temps.Window_Options_prototype_processOk = Window_Options.prototype.processOk;
+Window_Options.prototype.processOk = function() {
+    if(this.commandName(this.index())=="{return}"){
+        SceneManager._scene.popScene();
+    }else{
+        BirthdayManager.temps.Window_Options_prototype_processOk.call(this);
+    }
+};
+
+
+//皮肤
+
+BirthdayManager.temps.Window_Base_prototype_initialize = Window_Base.prototype.initialize;
+Window_Base.prototype.initialize = function(x, y, width, height) {
+    BirthdayManager.temps.Window_Base_prototype_initialize.call(this, x, y, width, height);
+    this._windowSkinName = BirthdayManager.windowSkin;
+};
+
+Window_Base.prototype.loadWindowskin = function() {
+    this.windowskin = ImageManager.loadSystem(BirthdayManager.windowSkin);
+};
+
+BirthdayManager.temps.Window_Base_prototype_update = Window_Base.prototype.update;
+Window_Base.prototype.update = function() {
+    BirthdayManager.temps.Window_Base_prototype_update.call(this);
+    if(this._windowSkinName !== BirthdayManager.windowSkin) {
+        this.windowskin = ImageManager.loadSystem(BirthdayManager.windowSkin);
+        this._windowSkinName = BirthdayManager.windowSkin;
+    }
+};
+
+BirthdayManager.temps.Scene_Title_prototype_commandNewGame = Scene_Title.prototype.commandNewGame;
+Scene_Title.prototype.commandNewGame = function() {
+    BirthdayManager.temps.Scene_Title_prototype_commandNewGame.call(this);
+    BirthdayManager.windowSkin = "Window_yellow";
+};
+
 //点击图标
 BirthdayManager.hasDestinationSprite = true;
 
@@ -381,10 +450,10 @@ Window_Result.prototype.initialize = function(){
     var width = Graphics.boxWidth;
     var height = BirthdayManager.availHeight();
     Window_Base.prototype.initialize.call(this,x,y,width,height);
-    this.drawText("最高连击数："+$gameVariables.value(18),0,0);
-    this.drawText("消灭机器人数："+$gameVariables.value(19),0,32);
+    this.drawText("{highest_combo}"+$gameVariables.value(18),0,0);
+    this.drawText("{kill_robot_num}"+$gameVariables.value(19),0,32);
     this.drawText("-----------------------",0,64);
-    this.drawText("得分："+$gameVariables.value(15),0,96);
+    this.drawText("{get_score}"+$gameVariables.value(15),0,96);
 
 }
 
@@ -465,7 +534,7 @@ Sprite_Score.prototype.initialize = function(){
 }
 
 Sprite_Score.prototype.drawScore = function(num){
-    this.drawText("得分："+num+" ");
+    this.drawText("{get_score}"+num+" ");
 }
 
 Sprite_Score.prototype.update = function(){
@@ -509,14 +578,16 @@ BirthdayManager.arrangeTachi = function(){
         }
     }
     if(this.tachiOrder.length>=2){
-        for(var i = 0; i< this.tachiOrder.length-1; i++){
-            if(this.delayDisappear){
-                this.deactivateTachi(this.tachiOrder[i],"left")
-                this.delayDisappear=false;
-            }else{
+        if(this.delayDisappear){
+            this.deactivateTachi(this.tachiOrder[this.tachiOrder.length-2],"left")
+        }else{
+            for(var i = 0; i< this.tachiOrder.length-1; i++){
                 this.diminishTachi(this.tachiOrder[i],"left");
             }
         }
+    }
+    if(this.delayDisappear){
+        this.delayDisappear=false;
     }
 }
 
@@ -636,10 +707,21 @@ BirthdayManager.setTaskText = function(txt){
 
 //窗口大小
 SceneManager.setWindowSize = function(){
-    this._screenWidth =window.screen.availWidth;
-    this._boxWidth = window.screen.availWidth;
-    this._boxHeight = window.screen.availHeight;
-    this._screenHeight = window.screen.availHeight;
+    if(window.screen.availWidth<window.innerWidth){
+        var w = window.screen.availWidth;
+    }else{
+        var w = window.innerWidth;
+    }
+
+    if(window.screen.availHeight<window.innerHeight){
+        var h = window.screen.availHeight;
+    }else{
+        var h = window.innerHeight;
+    }
+    this._screenWidth =w;
+    this._boxWidth = w;
+    this._boxHeight = h;
+    this._screenHeight = h;
 }
 
 //SceneManager.preferableRendererType = function() {
@@ -759,8 +841,11 @@ Window_Face.prototype.change = function(name){
 
 //蛋糕编辑窗口
 BirthdayManager.allCakes = {
-    "12345": {
-        image: "cake2"
+    "{Strawberry}{CherryBlossoms}{WhiteChocolate}":{
+
+    },
+    "":{
+
     }
 }
 
@@ -871,7 +956,7 @@ Window_CakeList.prototype.finishSelection = function(){
         key+= this._data[this._selectionList[i]].name;
         keyNum+=1;
     }
-
+    console.log(key);
     BirthdayManager.cakeKey = key;
 
     var scene =SceneManager._scene;
@@ -947,9 +1032,9 @@ Window_Confirm.prototype.maxCols = function(){
 }
 
 Window_Confirm.prototype.makeCommandList = function(){
-    this.addCommand("加入", "add");
-    this.addCommand("取出","remove");
-    this.addCommand("完成","finish");
+    this.addCommand("{add}", "add");
+    this.addCommand("{remove}","remove");
+    this.addCommand("{finish}","finish");
 }
 
 Window_Confirm.prototype.textPadding = function(){
@@ -1018,8 +1103,8 @@ Window_FinalConfirm.prototype.update = function(){
 }
 
 Window_FinalConfirm.prototype.makeCommandList = function(){
-    this.addCommand("确认","confirm");
-    this.addCommand("返回","return");
+    this.addCommand("{confirm}","confirm");
+    this.addCommand("{return}","return");
 }
 
 Window_FinalConfirm.prototype.maxCols = function(){
@@ -1031,7 +1116,7 @@ Window_FinalConfirm.prototype.refresh = function() {
     this.makeCommandList();
     this.createContents();
     Window_Selectable.prototype.refresh.call(this);
-    this.drawTextEx("{finalConfirm_Text}",0,0);
+    this.drawTextEx("<WordWrap>"+"{finalConfirm_Text_1}"+BirthdayManager.cakeKey+"{finalConfirm_Text_2}",0,0);
 };
 
 //边框窗口

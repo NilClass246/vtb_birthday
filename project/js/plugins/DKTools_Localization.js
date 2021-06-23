@@ -2382,7 +2382,8 @@ Scene_SelectLanguage.prototype.createLanguageWindow = function() {
     this._languageWindow = new DKTools.Window.Selectable();
 
     const lineHeight = this._languageWindow.getLineHeight();
-    const width = LocalizationParam.get('Window Width');
+    const width = Graphics.boxWidth;
+    //LocalizationParam.get('Window Width');
     const height = lineHeight * 2 + LocalizationParam.get('Window Rows') * flagSize;
     const x = (Graphics.boxWidth - width) / 2;
     const y = (Graphics.boxHeight - height) / 2;

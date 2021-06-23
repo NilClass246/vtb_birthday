@@ -1,7 +1,5 @@
 {
-    "text_hint":"Mea酱：\n    生日快乐！",
-    "pacman_sentence1":"随机对话1",
-    "pacmen_sentence2":"2",
-    "pacmen_sentence3":"3",
-    "pacmen_sentence4":"4"
+    "interface_language":"选择语言",
+    "start_game":"开始游戏",
+    "option":"设置"
 }

@@ -767,7 +767,7 @@ Sprite_Minimap.prototype.createPlayerSprite = function()
 
     this._playerSprite = new Sprite_MinimapIcon();
     this._playerSprite.bitmap = ImageManager.loadSystem(Params.playerIconImage);
-    this._playerSprite.x = rect.width / 2;
+    this._playerSprite.x = rect.width / 2 -5;
     this._playerSprite.y = rect.height / 2;
 
     this.addChild(this._playerSprite);

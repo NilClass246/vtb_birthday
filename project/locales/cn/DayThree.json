@@ -5,5 +5,10 @@
     "pacman_sentence3":"随机对话3",
     "pacman_sentence4":"随机对话4",
     "pacman_winning":"12封请柬都送完了！\n从地图两侧离开吧！",
-    "pacman_confirm":"按确认键\n退出结算界面"
+    "pacman_confirm":"确认以退出结算界面",
+    "pacman_fail_character":"",
+
+    "highest_combo":"最高连击数：",
+    "kill_robot_num":"消灭机器人数：",
+    "get_score":"得分："
 }

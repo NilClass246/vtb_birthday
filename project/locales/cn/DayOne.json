@@ -46,6 +46,12 @@
     "Day1_noe_talk_8":"我知道了……",
     "Day1_noe_talk_9":"买粽子……如月她是去买粽子了……",
     
-    
-    "finalConfirm_Text":"<WordWrap>确认制作这个蛋糕吗？"
+    "finalConfirm_Text_0":"材料加入了",
+    "finalConfirm_Text_1":"确认制作",
+    "finalConfirm_Text_2":"吗？",
+    "add":"加入",
+    "remove":"取出",
+    "finish":"完成",
+    "confirm":"确认",
+    "return":"返回"
 }

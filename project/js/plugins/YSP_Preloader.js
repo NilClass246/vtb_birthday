@@ -33,9 +33,21 @@ ysp.Preloader.GLOBAL = {
 ysp.Preloader.MAP_BASED = {
     // TEMPLATE
     // ID: { IMAGES: [], VIDEOS: [] }
-    1: {
+    8: {
         IMAGES: [
         // Insert something here
+        "pictures/tachi/koyori_body",
+        "pictures/tachi/koyori_normal",
+        "pictures/tachi/koyori_o",
+        "pictures/tachi/koyori_v",
+        "pictures/tachi/noe_body",
+        "pictures/tachi/noe_normal",
+        "pictures/tachi/noe_o",
+        "pictures/tachi/noe_v",
+        "pictures/tachi/mashiro_body",
+        "pictures/tachi/mashiro_normal",
+        "pictures/tachi/mashiro_o",
+        "pictures/tachi/mashiro_v",
         ],
 
         VIDEOS: [
