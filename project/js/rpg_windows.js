@@ -331,7 +331,7 @@ Window_Base.prototype.processNewLine = function(textState) {
     textState.x = textState.left;
     textState.y += textState.height;
     textState.height = this.calcTextHeight(textState, false);
-    if (DKTools.Localization._locale == "cn" && textState.text[textState.index]!="\n") {
+    if ((DKTools.Localization._locale == "cn"||DKTools.Localization._locale == "jp") && textState.text[textState.index]!="\n") {
 		return;
 	}
     textState.index++;

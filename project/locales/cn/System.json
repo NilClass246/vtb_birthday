@@ -1,5 +1,9 @@
 {
-    "interface_language":"选择语言",
+    "interface_language":"言語選択",
     "start_game":"开始游戏",
-    "option":"设置"
+    "option":"设置",
+    "credits":"鸣谢",
+    "backup":"备份",
+    "yes":"是",
+    "no":"否"
 }

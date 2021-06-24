@@ -180,7 +180,7 @@ Scene_Title.prototype.createForeground = function() {
 	this.addChild(this._drill_social_btn_field);	
 	
 	for (var i = 0; i < DrillUp.title_socialBtns_max; i++) {
-        if (DrillUp.title_socialBtns[i].length != 0 && TetrisManager.Records.isTitleScreenChanged){
+        if (DrillUp.title_socialBtns[i].length != 0){
 			var temp_sprite_data = JSON.parse(JSON.stringify( DrillUp.title_socialBtns[i] ));	//拷贝object（杜绝引用造成的修改）
 			var temp_sprite = new Sprite(ImageManager.loadTitle1(temp_sprite_data['src_img']));
 			temp_sprite.anchor.x = 0.5;
@@ -221,6 +221,10 @@ Scene_Title.prototype.drill_checkImgTouch = function() {
 			SoundManager.playOk();
 		}
 	}
+
+	if(this.drill_isOnSprite(BirthdayManager.LanguageIcon)){
+        SceneManager.push(Scene_ChooseLanguage);
+    }
 }
 //==============================
 // * 标题-鼠标点击图片范围判断
@@ -235,8 +239,6 @@ Scene_Title.prototype.drill_isOnSprite = function(sprite) {
 	 if (TouchInput.x > sprite.x + cw) {return false};
 	 if (TouchInput.y < sprite.y - ch) {return false};
 	 if (TouchInput.y > sprite.y + ch) {return false};
-	 console.log(TouchInput.x);
-	 console.log(sprite.x + cw);
 	 return true;	
 };
 

@@ -624,6 +624,7 @@ Sprite_Minimap.prototype.initialize = function()
     Sprite_Base.prototype.initialize.call(this);
 
     var rect = Params.mapRect;
+    rect.y = BirthdayManager.upperFaceSize()+36;
     this._gridNumber = {
         x: Math.floor((rect.width + Params.gridSize - 1) / Params.gridSize),
         y: Math.floor((rect.height + Params.gridSize - 1) / Params.gridSize),

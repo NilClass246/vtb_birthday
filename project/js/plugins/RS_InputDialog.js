@@ -389,7 +389,7 @@ function Scene_InputDialog() {
   RS.InputDialog.Params.variableID = Number(parameters['variable ID'] || 3);
 
   RS.InputDialog.Params.debug = Boolean(parameters['debug'] === 'true');
-  RS.InputDialog.Params.localText="神楽めあ：&#10    生日快乐！"
+  RS.InputDialog.Params.localText=""
   //RS.InputDialog.Params.localText = String(parameters['Text Hint'] || 'Test Message');
   RS.InputDialog.Params.inputDirection = String(parameters['direction'] || 'ltr');
 

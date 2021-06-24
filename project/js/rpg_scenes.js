@@ -689,7 +689,7 @@ Scene_Map.prototype.isMapTouchOk = function() {
 };
 
 Scene_Map.prototype.processMapTouch = function() {
-    if (TouchInput.isTriggered() || this._touchCount > 0) {
+    if ((TouchInput.isTriggered() || this._touchCount > 0)&&!TouchInput.isOnWindow()) {
         if (TouchInput.isPressed()) {
             if (this._touchCount === 0 || this._touchCount >= 15) {
                 var x = $gameMap.canvasToMapX(TouchInput.x);

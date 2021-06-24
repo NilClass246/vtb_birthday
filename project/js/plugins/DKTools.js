@@ -13378,6 +13378,7 @@ DKTools.EventManager = class {
         if (object instanceof DKTools.Event || object instanceof DKTools.Animation) {
             event = object;
         } else if (object instanceof Object) {
+            console.log(object);
             event = new DKTools.Event(object);
         }
 

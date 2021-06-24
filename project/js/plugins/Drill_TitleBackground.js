@@ -700,6 +700,11 @@ Scene_Title.prototype.drill_createBackgrounds = function() {
 			temp_sprite.blendMode = temp_sprite_data['blendMode'];
 			temp_sprite.zIndex = temp_sprite_data['zIndex'];
 			temp_sprite.visible = DrillUp.global_title_background_visible[i];
+
+			if(i==0){
+				temp_sprite.scale.x = Graphics.boxWidth/375;
+				temp_sprite.scale.y = Graphics.boxHeight/812;
+			}
 			
 			this._drill_sprite_backgrounds.push(temp_sprite);
 			this._drill_sprite_backgrounds_data.push(temp_sprite_data);

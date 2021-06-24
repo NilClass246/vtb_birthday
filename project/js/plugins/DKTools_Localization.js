@@ -1199,7 +1199,6 @@ DKTools.Localization = class {
             if (index === locales.length) {
                 index = 0;
             }
-
             return locales[index];
         }
 
@@ -1391,7 +1390,7 @@ DKTools.Localization = class {
             return this._file.exists();
         }
 
-        return DKTools.WebStorage.exists(this._webStoragePath);
+        return DKTools.IO.WebStorage.exists(this._webStoragePath);
     }
 
     // load methods

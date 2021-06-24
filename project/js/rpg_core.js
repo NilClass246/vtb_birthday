@@ -6826,7 +6826,8 @@ Window.prototype._updateCursor = function() {
  * @private
  */
 Window.prototype._updateContents = function() {
-    var w = this._width - this._padding * 2;
+    var w = this._width 
+    //- this._padding * 2;
     var h = this._height - this._padding * 2;
     if (w > 0 && h > 0) {
         this._windowContentsSprite.setFrame(this.origin.x, this.origin.y, w, h);

@@ -903,12 +903,12 @@ Window_Base.prototype.processNormalCharacter = function(textState) {
 Window_Base.prototype.checkWordWrap = function (textState) {
     if (!textState) return false;
     if (!this._wordWrap) return false;
-    if (DKTools.Localization._locale == "cn") {
+    if (DKTools.Localization._locale == "cn"||DKTools.Localization._locale == "jp") {
         var word = textState.text.substring(textState.index, textState.index+1);
         //if(textState.index<textState.text.length){
           //var word2 = textState.text.substring(textState.index+1, textState.index+1);
           //console.log(word);
-          if(word=="，"||word=="。"||word=="？"){
+          if(word=="，"||word=="。"||word=="？"||word==" "||word=="、"){
             return false;
           }
         //}
@@ -929,7 +929,7 @@ Window_Base.prototype.checkWordWrap = function (textState) {
 
 Window_Base.prototype.wordwrapWidth = function(){
   //console.log(this.contents.width);
-  return this.contents.width;
+  return this.contentsWidth();
 };
 
 Window_Base.prototype.saveCurrentWindowSettings = function(){

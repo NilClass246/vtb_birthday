@@ -53,5 +53,8 @@
     "remove":"取出",
     "finish":"完成",
     "confirm":"确认",
-    "return":"返回"
+    "return":"返回",
+
+    "purchase_Text_0":"确定要购买",
+    "purchase_Text_1":"吗？"
 }
