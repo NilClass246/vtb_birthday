@@ -21,7 +21,14 @@ ysp.Preloader.Config = {
 // GLOBAL Preload, will be preloaded when start the game
 ysp.Preloader.GLOBAL = {
     IMAGES: [
-        'system/selected'
+        'system/selected',
+        "titles1/1",
+        "titles1/2",
+        "titles1/3",
+        "titles1/4",
+        "titles1/7",
+        "titles1/8",
+        "titles1/9"
     ],
 
     VIDEOS: [
@@ -55,9 +62,15 @@ ysp.Preloader.MAP_BASED = {
         ]
     },
 
-    2: {
+    1: {
         IMAGES: [
         // Insert something here
+        "system/selected",
+        "pictures/tachi/koyori_body",
+        "pictures/tachi/koyori_normal",
+        "pictures/tachi/koyori_o",
+        "pictures/tachi/koyori_v",
+        "pictures/图",
         ],
 
         VIDEOS: [

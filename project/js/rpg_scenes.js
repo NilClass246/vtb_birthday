@@ -443,8 +443,8 @@ Scene_Title.prototype.create = function() {
 Scene_Title.prototype.start = function() {
     Scene_Base.prototype.start.call(this);
     SceneManager.clearStack();
-    this.centerSprite(this._backSprite1);
-    this.centerSprite(this._backSprite2);
+    //this.centerSprite(this._backSprite1);
+    //this.centerSprite(this._backSprite2);
     this.playTitleMusic();
     this.startFadeIn(this.fadeSpeed(), false);
 };

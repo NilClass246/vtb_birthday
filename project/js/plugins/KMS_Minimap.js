@@ -1521,9 +1521,11 @@ Spriteset_Map.prototype.createUpperLayer = function()
  */
 Spriteset_Map.prototype.createMinimap = function()
 {
-    this._minimap = new Sprite_Minimap();
-    this._minimap.refresh();
-    this.addChild(this._minimap);
+    if($gameMap.isMinimapEnabled()){
+        this._minimap = new Sprite_Minimap();
+        this._minimap.refresh();
+        this.addChild(this._minimap);
+    }
 };
 
 var _KMS_Spriteset_Map = Spriteset_Map.prototype.update;

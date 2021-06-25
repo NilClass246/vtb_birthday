@@ -58,8 +58,10 @@
     /**
      * Some variables used to cache stuff and calculate the current image state.
      */
-    var _x = window.screen.availWidth-195, _y = window.screen.availHeight-109, _cx = _x != (_x|0), _cy = _y != (_y|0), _w, _h, _t = 0, _r = false;
+    var _x = _params['X'], _y = _params['Y'], _cx = _x != (_x|0), _cy = _y != (_y|0), _w, _h, _t = 0, _r = false;
 //_params['X'], _params['Y']
+//window.screen.availWidth-195
+//window.screen.availHeight-109
     /**
      * Loads the background image, if any.
      */

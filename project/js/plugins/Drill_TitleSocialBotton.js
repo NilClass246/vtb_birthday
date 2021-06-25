@@ -222,8 +222,12 @@ Scene_Title.prototype.drill_checkImgTouch = function() {
 		}
 	}
 
-	if(this.drill_isOnSprite(BirthdayManager.LanguageIcon)){
-        SceneManager.push(Scene_ChooseLanguage);
+	if(this.drill_isOnSprite(BirthdayManager.SoundIcon)){
+		if(BirthdayManager.isMuted){
+			BirthdayManager.unmute();
+		}else{
+			BirthdayManager.mute();
+		}
     }
 }
 //==============================

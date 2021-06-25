@@ -162,10 +162,12 @@ Window_Base.prototype.hide = function() {
 };
 
 Window_Base.prototype.activate = function() {
+    //console.log(2);
     this.active = true;
 };
 
 Window_Base.prototype.deactivate = function() {
+    //console.log(1);
     this.active = false;
 };
 

@@ -720,6 +720,7 @@ if ( !this._fogList ) {
 
 
   Game_Interpreter.prototype.overlayPluginCommand = function(args) {
+    //console.log(args);
     if (args.length < 2) return;
 
     switch(args[0].toLowerCase()) {

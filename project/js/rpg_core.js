@@ -6792,6 +6792,7 @@ Window.prototype._refreshArrows = function() {
  * @private
  */
 Window.prototype._refreshPauseSign = function() {
+    return;
     var sx = 144;
     var sy = 96;
     var p = 24;
