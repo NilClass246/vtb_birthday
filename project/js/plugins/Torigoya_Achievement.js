@@ -386,6 +386,7 @@
             BirthdayManager.achievements.robotKilledCount = this._loadRobotKilledCount();
             BirthdayManager.achievements.robotKillingCount = this._loadRobotKillingCount();
             BirthdayManager.achievements.madeCakes = this._loadMadeCakes();
+            BirthdayManager.achievements.isSecondLap = this._loadSecondLap();
         };
 
         AchievementManager.prototype.save = function () {
@@ -401,7 +402,8 @@
                 achievements: this._achievements,
                 robotKilledCount: BirthdayManager.achievements.robotKilledCount,
                 robotKillingCount: BirthdayManager.achievements.robotKillingCount,
-                madeCakes: BirthdayManager.achievements.madeCakes
+                madeCakes: BirthdayManager.achievements.madeCakes,
+                isSecondLap: BirthdayManager.achievements.isSecondLap
             }));
         };
 
@@ -410,12 +412,14 @@
             BirthdayManager.achievements.robotKilledCount = 0;
             BirthdayManager.achievements.robotKillingCount = 0;
             BirthdayManager.achievements.madeCakes = 0;
+            BirthdayManager.achievements.isSecondLap = false;
             if (!Achievement.settings.useGlobalSave) return;
             StorageManager.save(Achievement.saveSlotID, JSON.stringify({
                 achievements: [],
                 robotKilledCount: 0,
                 robotKillingCount: 0,
-                madeCakes: 0
+                madeCakes: [],
+                isSecondLap: false
             }));
         };
 
@@ -453,9 +457,19 @@
             try {
                 var json = StorageManager.load(Achievement.saveSlotID);
                 var obj = JSON.parse(json);
-                return obj.madeCakes || 0;
+                return obj.madeCakes || [];
             } catch (_e) {
-                return 0;
+                return [];
+            }
+        }
+
+        AchievementManager.prototype._loadSecondLap = function(){
+            try {
+                var json = StorageManager.load(Achievement.saveSlotID);
+                var obj = JSON.parse(json);
+                return obj.isSecondLap || false;
+            } catch (_e) {
+                return false;
             }
         }
 

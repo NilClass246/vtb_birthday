@@ -1,9 +1,9 @@
 {
-    "Day1_1":"June 2021, it's just the time that summer heat growing hottest.",
+    "Day1_1":"July 2021, it's just the time that summer heat growing hottest.",
     "Day1_2":"The sun gathered power in Winter and Spring unbuttonly throws its light to Tokyo, commits ruthless judgement to people weakened by post-holiday syndrome.",
     "Day1_3":"-- it should be like that if it's a world without science and technology.",
     "Day1_4":"Although there's hot sun everywhere outside, in the sanctuary sheltered by the God named air-conditioner, comforting cool air still has its place,",
-    "Day1_5":"to protect the three girls here from bad environment and start their talking, which is about their leader whose birthday is in this month.",
+    "Day1_5":"to protect the three girls here from bad environment and start their talking, which is about their leader whose birthday is in next month.",
     "Day1_koyori_1":"So what do you think?",
     "Day1_noe_1":"Uh,leader's birthday...",
     "Day1_noe_2":"Anyway we've been cared a lot, we should surely convey our thanks.",
@@ -47,5 +47,86 @@
     "Day1_noe_talk_9":"Rice dumplings...Koyori chan went for rice dumplings...",
     
     
-    "finalConfirm_Text":"<WordWrap>确认制作这个蛋糕吗？"
+    "Day1_koyori_leaving_1":"Ummm...I hope they can accompany Mea senpai well.",
+    "Day1_koyori_leaving_2":"Since I'm out, it's all counting on you, Noe-chan, Mashiro-chan!",  
+    
+    "Day1_npc_1_1":"[Kid]\nThere are so much goods in this supermarket...And it's so hot outside...Oh well...I really don't want to be here.",
+    "Day1_npc_1_2":"(Huh?)",
+    "Day1_npc_1_3":"[Kid]\nBut its for allowance...Ew, let's begin, the earlier finished here, the earlier games at home.",
+    "Day1_npc_1_4":"[Kid]\nMom's note here,um, there're vegetables and fruits in shelf at east, meat and alcohol at west...",
+    "Day1_npc_1_5":"[Kid]\nAnd seems nothing to buy elsewhere, maybe the other places are all strange things.",
+
+    "Day1_npc_2_1":"[Housewife]\nWhat should I make for celebration today...",
+    "Day1_npc_2_2":"(Um? Is this auntie celebrating something too?)",
+    "Day1_npc_2_3":"[Housewife]\nYes, ice cream cake.",
+    "Day1_npc_2_4":"[Housewife]\nSuch a hot weather, his favorite ice cream cake would be nice.",
+    "Day1_npc_2_5":"[Housewife]\nSince he's going to college, it would be difficult for him to eat something from home.",
+    "Day1_npc_2_6":"[Housewife]\nOkay, I'll make a most deluxe big cake with five materials!",
+
+    "Day1_npc_3_1":"[Office Lady]\nCoffee, ah, alcohol...",
+    "Day1_npc_3_2":"[Office Lady]\nThese two are loyal company of corporate slaves at last.",
+    "Day1_npc_3_3":"[Office Lady]\nFor refreshing, for relaxing, for food accompaning!",
+    "Day1_npc_3_4":"[Office Lady]\nAh, but I can go for her birthday cake today, it seems useless tonight at least...",
+    "Day1_npc_3_5":"[Office Lady]\nUm, wait, it's not surely useless...What would it taste if they got mixed?",
+    "Day1_npc_3_6":"(Alcohol, coffee, and cake mixed together? What would that tastes like on earth?)",
+
+    "Day1_npc_4_1":"[Youth]\nIt's the first time to buy and cooking, I'm so nervous that even feeling stomachache.",
+    "Day1_npc_4_2":"[Youth]\nThough it's the simplest recipe with only three materials...",
+    "Day1_npc_4_3":"[Youth]\nI'm still afraid of creating strange flavor...or even strange consequence...",
+    "Day1_npc_4_4":"[Youth]\nWouldn't kitchen explode before that?",
+    "Day1_npc_4_5":"(I think it won't happen if you cook normally...)",
+
+    "Day1_paying_1":"[Cashier]\nDo you have a membership card, lady?",
+    "Day1_paying_2":"Ah, membership card, yes.",
+    "Day1_paying_3":"(Although it's took from Mea senpai...)",
+    "Day1_paying_4":"[Cashier]\nLet me see...Ah, congratulates, it's the third anniversary of your membership.",
+    "Day1_paying_5":"[Cashier]\nSo, are these all what you want? They are 8542 yen in total with annual discounts.",
+    "Day1_paying_6":"[Cashier]\nBalance in your card is enough, do you need my help for bagging?",
+    "Day1_paying_7":"I'll do that myself.",
+
+    "Day1_cross_0":"[Alarm]\nBeep!",
+    "Day1_cross_1":"(Oops, I walked so far since thinking...)",
+    "Day1_cross_2":"(Um, seems the cashier didn't mention here, and the alarm just went off once.)",
+    "Day1_cross_3":"(Just back to cashier soon...Oh my, I nearly ruined the whole plan...Wake up Kisaragi, you should be a good model for your kohai.)",
+
+    "Day1_backhome_1":"(Whispers） I'm home...",
+    "Day1_backhome_2":"It seems they stalled Mea senpai well, I'd ran to kitchen at right side --",
+
+    "Day1_finishing_1":"Whew...Cake is finished.",
+    "Day1_finishing_2":"Not so hard to do, that's not expected.",
+    "Day1_finishing_3":"And then...",
+    "Day1_finishing_4":"[Kagura Mea]\nI'm hungry~~~",
+    "Day1_finishing_5":"[Kujo Mashiro]\nJust wait a minute Mea senpai, Koyori senpai would be home soon...",
+    "Day1_finishing_6":"(Oh no, sounds like they are coming at kitchen!)",
+    "Day1_finishing_7":"I must hide the cake well!",
+
+    "Day1_End_1":"Finally it's ended waving instead of drowning.",
+    "Day1_End_2":"Kisaragi hid the cake just before the door of kitchen opened, then fed Mea well.",
+    "Day1_End_3":"Also, she removed Mea's feeling of incompatible when she came in.",
+    "Day1_End_4":"However, challenges and risks wouldn't stop here. After cake prepared, mission of decorating party room should be executed.",
+    "Day1_End_5":"As for Yaotome, what troubles would she meet?",
+    "Day1_task_1":"Go to supermarket and buy material for cake!",
+    "Day1_task_2":"Go home and make cake!",
+    "Day1_task_3":"Go to kitchen at top right-hand corner and make cake!",
+    "Day1_task_4":"Make a cake with material you bought!",
+
+    "Day1_alert_1":"The material you bought is not enought for a cake.\nTry again...",
+    
+    "finalConfirm_Text_0":"added",
+    "finalConfirm_Text_1":"Are you sure to make ",
+    "finalConfirm_Text_2":" ？",
+    "add":"Add",
+    "remove":"Remove",
+    "finish":"Finish",
+    "confirm":"Check",
+    "return":"Return",
+    "Day1_masterial_added_1":"Um, pick a material first...",
+    "Day1_masterial_added_2":"This one first, Mea senpai would like it.",
+    "Day1_masterial_added_3":"Next one is...",
+    "Day1_masterial_added_4":"Seems might be enough...but it could be more deluxe with more...",
+    "Day1_masterial_added_5":"I think four is approaching its limit...",
+    "Day1_masterial_added_6":"Ah, enough, enough, it must be strange if adding more!",
+
+    "purchase_Text_0":"Are you picking ",
+    "purchase_Text_1":" ？"
 }

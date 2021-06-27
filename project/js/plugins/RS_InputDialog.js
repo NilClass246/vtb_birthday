@@ -393,7 +393,7 @@ function Scene_InputDialog() {
   //RS.InputDialog.Params.localText = String(parameters['Text Hint'] || 'Test Message');
   RS.InputDialog.Params.inputDirection = String(parameters['direction'] || 'ltr');
 
-  RS.InputDialog.Params.nMaxLength = 1000;
+  RS.InputDialog.Params.nMaxLength = 999999999999999999999999999999999999999999999999999999;
   //parseInt(parameters['Max Length'] || '6');
 
   RS.InputDialog.Params.szTextBoxId = 'md_textBox';
@@ -1015,6 +1015,10 @@ function Scene_InputDialog() {
   Scene_InputDialog.prototype.okResult = function () {
     var text = this._textBox.getText() || '';
     if(text.match(/^([\d]+)$/g)) text = Number(RegExp.$1);
+    if(text.length>=150){
+      //AchievementManager.unlock(16);
+      BirthdayManager.unlockAchievement(16);
+    }
     $gameVariables.setValue(RS.InputDialog.Params.variableID, "{{letter}}");
     BirthdayManager.finalResult = "<WordWrap>"+text;
     if(SceneManager._stack.length > 0) {

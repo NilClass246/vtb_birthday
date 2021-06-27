@@ -7972,6 +7972,10 @@ Game_Player.prototype.isOnDamageFloor = function() {
 
 Game_Player.prototype.moveStraight = function(d) {
     if (this.canPass(this.x, this.y, d)) {
+        if(BirthdayManager.isRecordingSteps){
+            BirthdayManager.recordedSteps+=1;
+            //console.log(BirthdayManager.recordedSteps);
+        }
         this._followers.updateMove();
     }
     Game_Character.prototype.moveStraight.call(this, d);

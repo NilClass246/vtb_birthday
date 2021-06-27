@@ -11,8 +11,33 @@ BirthdayManager.finalResult = "meameasuki!!";
 
 BirthdayManager.windowSkin = "Window";
 
+//自动存档
+Game_System.prototype.autoSaveGame = function() {
+    $gameSystem.onBeforeSave();
+    if (DataManager.saveGame(1)) {
+        console.log("Autosave successful. Saved in slot "+ 1);
+        //StorageManager.cleanBackup(1);
+    } else {
+        console.warn("Autosave Failed.");
+    }
+};
+
+BirthdayManager.loadAutoSave = function(){
+    if (DataManager.loadGame(1)) {
+        SoundManager.playLoad();
+        if ($gameSystem.versionId() !== $dataSystem.versionId) {
+            $gamePlayer.reserveTransfer($gameMap.mapId(), $gamePlayer.x, $gamePlayer.y);
+            $gamePlayer.requestMapReload();
+        }
+        SceneManager.goto(Scene_Map);
+        $gameSystem.onAfterLoad();
+    } else {
+        SoundManager.playBuzzer();
+    }
+}
+
 //版本控制
-BirthdayManager.version = "V3.01"
+BirthdayManager.version = "V3.05"
 
 function Sprite_Version(){
     this.initialize.apply(this, arguments);
@@ -27,11 +52,107 @@ Sprite_Version.prototype.initialize = function(){
     this.bitmap.drawText(BirthdayManager.version , 0, 0, 100, 36, "left");
 }
 
+//成就的特效！
+
+function Sprite_Celebration(){
+    this.initialize.apply(this, arguments);
+}
+
+Sprite_Celebration.prototype = Object.create(Sprite.prototype);
+Sprite_Celebration.prototype.constructor = Sprite_Celebration;
+
+Sprite_Celebration.prototype.initialize = function(num){
+    Sprite.prototype.initialize.call(this);
+    //this.max_time = time;
+    //this.render_count = 0;
+    //this.time_count = 0;
+    this.particle_List = [];
+    for(var i = 0; i<num; i++){
+        var s = new Sprite_Cpart();
+        s.move(Math.random()*Graphics.boxWidth, 0);
+        this.particle_List.push(s);
+        this.addChild(s);
+    }
+    AudioManager.playSe({
+        name: "Applause1",
+        volume: 90,
+        pitch: 100,
+        pan: 0
+    });
+}
+
+Sprite_Celebration.prototype.update = function(){
+    Sprite.prototype.update.call(this);
+    for(var i =0; i<this.particle_List.length; i++){
+        var s = this.particle_List[i]
+        if(s._ended){
+            this.particle_List.splice(i, 1);
+            this.removeChild(s);
+        }
+    }
+    if(this.particle_List.length<=0){
+        this.destroy();
+    }
+}
+
+function Sprite_Cpart(){
+    this.initialize.apply(this, arguments);
+}
+
+Sprite_Cpart.prototype = Object.create(Sprite.prototype);
+Sprite_Cpart.prototype.constructor = Sprite_Cpart;
+
+Sprite_Cpart.prototype.initialize = function(){
+    Sprite.prototype.initialize.call(this);
+    this.bitmap = ImageManager.loadPicture("FishBanParticle");
+    this.ysped = 0;
+    this.xsped = 0;
+    this.anchor.x = 0.5;
+    this.anchor.y = 1;
+    this.falling = true;
+    this._ended = false;
+}
+
+Sprite_Cpart.prototype.update = function(){
+    Sprite.prototype.update.call(this);
+    this.ysped+=Math.random()*0.2;
+    this.y+=this.ysped;
+    this.x+=this.xsped;
+    if(this.y-50>Graphics.boxHeight&&!this.falling){
+        this._ended = true;
+    }
+    if(this.y>Graphics.boxHeight&& this.falling){
+        this.falling = false;
+        this.xsped = Math.random()*3-1.5;
+        this.ysped = -10;
+    }
+}
+
 //成就
 BirthdayManager.achievements = {};
 BirthdayManager.achievements.robotKilledCount = 0;
 BirthdayManager.achievements.robotKillingCount = 0;
-BirthdayManager.achievements.madeCakes = 0;
+BirthdayManager.achievements.madeCakes = [];
+BirthdayManager.achievements.isSecondLap = false;
+
+BirthdayManager.unlockAchievement = function(ID){
+    Game_Interpreter.prototype.pluginCommand.call(this, "Achievement", [ID]);
+}
+
+BirthdayManager.isRecordingSteps = false;;
+BirthdayManager.recordedSteps = 0
+
+BirthdayManager.temps.Scene_Title_prototype_initialize = Scene_Title.prototype.initialize;
+Scene_Title.prototype.initialize = function() {
+    BirthdayManager.temps.Scene_Title_prototype_initialize.call(this);
+    var d = new Date();
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+    console.log("month:"+month+" day:"+day);
+    if(month==8&&day==2){
+        BirthdayManager.unlockAchievement(21);
+    }
+};
 
 //scrollText
 //Window_ScrollText.prototype.initialize = function() {
@@ -91,9 +212,8 @@ BirthdayManager.movebackMessageWindow = function(){
 //虚拟按键相关的问题
 BirthdayManager.manageVirtualButtons = function(){
     if($gameSwitches){
-        if($gameSwitches.value(33)){
+        if(!$gameSwitches.value(22)){
 
-        }else{
             var scene = SceneManager._scene;
             BirthdayManager.pluginCommandHideDpad(scene, ["hide","all"]);
             BirthdayManager.pluginCommandHideControl(scene, ["hide","all"]);
@@ -153,7 +273,31 @@ Scene_Map.prototype.start = function() {
             BirthdayManager.restoreCakeScene();
         }
     }
+    BirthdayManager.manageSkinAndFace();
 };
+
+BirthdayManager.manageSkinAndFace = function(){
+    if($gameSwitches.value(10)){
+        BirthdayManager.changeFace("koyori");
+        BirthdayManager.windowSkin = "Window_yellow";
+    }
+
+    if($gameSwitches.value(13)){
+        BirthdayManager.changeFace("noe");
+        BirthdayManager.windowSkin = "Window_purple";
+    }
+
+    
+    if($gameSwitches.value(14)){
+        BirthdayManager.changeFace("mashiro");
+        BirthdayManager.windowSkin = "Window_magenta";
+    }
+
+    if($gameSwitches.value(16)){
+        BirthdayManager.changeFace("mea");
+        BirthdayManager.windowSkin = "Window_cyan";
+    }
+}
 
 
 //触摸修改
@@ -232,6 +376,9 @@ Scene_Title.prototype.createForeground = function() {
     var v = new Sprite_Version();
     v.move(10,10);
     this.addChild(v)
+
+    //var c = new Sprite_Celebration(50);
+    //this.addChild(c);
 };
 
 BirthdayManager.isMuted = false;
@@ -506,14 +653,19 @@ BirthdayManager.exitCakeScene = function(){
     this.hasDestinationSprite = true;
     this.camera_xoffset = 0;
     $gameMap._displayY -= 0.25;
-    scene._characterWindow.destroy();
-    scene._cakeDisplayWindow.destroy();
-    scene._TachiWindow.destroy();
-    scene._TachiBoundary.destroy();
+    scene.removeChild(scene._characterWindow);
+    //scene._characterWindow.destroy();
+    scene.removeChild(scene._cakeDisplayWindow);
+    //scene._cakeDisplayWindow.destroy();
+    scene.removeChild(scene._TachiWindow);
+    //scene._TachiWindow.destroy();
+    scene.removeChild(scene._TachiBoundary);
+    //scene._TachiBoundary.destroy();
     scene.removeChild(scene._CakeListWindow);
 }
 
 BirthdayManager.overlayPluginCommand = function(args){
+    console.log(args);
     Game_Interpreter.prototype.overlayPluginCommand.call(this, args);
 }
 
@@ -732,8 +884,8 @@ Counter.prototype.initialize = function(num){
     this.y = Graphics.boxHeight/2;
     this.scale.x = 2;
     this.scale.y = 2;
-    this.bitmap = new Bitmap(32, 32);
-    this.write(this.num);
+    this.bitmap = new Bitmap(64, 32);
+    this.write("{get}");
 }
 
 Counter.prototype.update = function(){
@@ -744,7 +896,12 @@ Counter.prototype.update = function(){
     if(this.actualTime>=60){
         this.actualTime = 0;
         this.num -=1;
-        this.write(this.num);
+        if(this.num==2){
+            this.write("{set}");
+        }
+        if(this.num==1){
+            this.write("{go}");
+        }
     }
     if(this.num ==0){
         this.destroy();
@@ -753,7 +910,7 @@ Counter.prototype.update = function(){
 
 Counter.prototype.write = function(t){
     this.bitmap.clear();
-    this.bitmap.drawText(t, 0, 0, 32, 32, 'center');
+    this.bitmap.drawText(t, 0, 0, 64, 32, 'center');
 }
 
 function Window_Result(){
@@ -825,7 +982,7 @@ Sprite_Combo.prototype.initialize = function(){
 }
 
 Sprite_Combo.prototype.drawCombo = function(num){
-    this.drawText("连击X"+num+" ");
+    this.drawText("{Combo}X"+num+" ");
 }
 
 BirthdayManager.showCombo = function(){
@@ -1107,15 +1264,22 @@ function Scene_Credits(){
 }
 
 
-Scene_Credits.prototype = Object.create(Scene_Base.prototype);
+Scene_Credits.prototype = Object.create(Scene_MenuBase.prototype);
 Scene_Credits.prototype.constructor = Scene_Credits;
 
 Scene_Credits.prototype.create = function(){
-    Scene_Base.prototype.create.call(this);
+    Scene_MenuBase.prototype.create.call(this);
     this._window_credits = new Window_Credits();
     this._window_credits.startMessage("{Credits_Table}");
     this.addChild(this._window_credits);
+    //AchievementManager.unlock(20);
+    BirthdayManager.unlockAchievement(20);
 }
+
+Scene_Credits.prototype.createBackground = function() {
+    Scene_MenuBase.prototype.createBackground.call(this);
+    //this._backgroundSprite.bitmap.fillAll('black')
+};
 
 function Window_Credits(){
     this.initialize.apply(this, arguments);
@@ -1125,20 +1289,18 @@ Window_Credits.prototype = Object.create(Window_ScrollText.prototype);
 Window_Credits.prototype.constructor = Window_Credits;
 
 Window_Credits.prototype.initialize = function(){
-    var width = Graphics.boxWidth;
-    var height = Graphics.boxHeight;
-    Window_Base.prototype.initialize.call(this, 0, 0, width, height);
-    this.opacity = 0;
-    this.hide();
-    this._text = '';
-    this._allTextHeight = 0;
+    Window_ScrollText.prototype.initialize.call(this);
 }
 
 Window_Credits.prototype.startMessage = function(t) {
-    this._text = t;
+    this._text = DKTools.Localization.getText(t);
     this.refresh();
     this.show();
 };
+
+Window_Credits.prototype.standardFontSize = function(){
+    return BirthdayManager.getFontSize();
+}
 
 Window_Credits.prototype.update = function() {
     Window_Base.prototype.update.call(this);
@@ -1184,6 +1346,8 @@ Scene_Map.prototype.hideAllWindows = function(){
 }
 
 Scene_Map.prototype.showAllWindows = function(){
+    this._messageWindow.x = Graphics.boxWidth;
+    this._messageWindow.width = this._messageWindow.windowWidth();
     this.showingWindows = true;
 }
 
@@ -1200,11 +1364,15 @@ Scene_Map.prototype.update = function(){
             this._messageWindow.x+=disctance;
             this._InfoWindow.x+=disctance;
             this._button1.x+=disctance;
+            this._button1.deactivate();
             this._button2.x+=disctance;
+            this._button2.deactivate();
 
         }else{
             this.hidingCount = 0;
             this.hidingWindows = false;
+            this._button1.activate();
+            this._button2.activate();
         }
     }
 
@@ -1215,13 +1383,17 @@ Scene_Map.prototype.update = function(){
             this._TaskWindow.x += disctance;
             this._FaceWindow.x += disctance;
 
-            this._messageWindow.x-=disctance;
+            this._messageWindow.x =(Graphics.boxWidth - this._messageWindow.windowWidth()+ Graphics.boxWidth*(1/5)) / 2+Graphics.boxWidth-disctance*this.showingCount;
             this._InfoWindow.x-=disctance;
             this._button1.x-=disctance;
+            this._button1.deactivate();
             this._button2.x-=disctance;
+            this._button2.deactivate();
         }else{
             this.showingCount=0;
             this.showingWindows = false;
+            this._button1.activate();
+            this._button2.activate();
         }
     }
 
@@ -1297,141 +1469,156 @@ Window_Face.prototype.change = function(name){
 //蛋糕编辑窗口
 BirthdayManager.allCakes = {
     "3":{
-        name:"{朴实无华的蛋糕}",
+        name:"{Unpretentious_Cake}",
         image:"朴实无华的蛋糕"
     },
     "4":{
-        name:"{香气扑鼻的蛋糕}",
+        name:"{Fragrant_Cake}",
         image:"香气扑鼻的蛋糕"
     },
     "5":{
-        name:"{教人垂涎的蛋糕}",
-        image:"教人垂涎的蛋糕"
+        name:"{Alluring_Cake}",
+        image:"惹人垂涎的蛋糕"
     },
-    "{Strawberry}{CherryBlossoms}{WhiteChocolate}":{
-        name: "{纯白恋心}",
+    "{Strawberry}{Cream}{WhiteChocolate}":{
+        name: "{Loving_Lily_Heart}",
         image:"纯白恋心"
     },
     "{Blueberry}{Cream}{Cheese}":{
-        name:"{雪域蓝冰}",
+        name:"{Blue_Ice_of_Snowfield}",
         image:"雪域蓝冰"
     },
     "{Icing}{VanillaEssentialOil}{MatchaPowder}":{
-        name:"{香草青淞}",
+        name:"{Vanilla_Rime}",
         image:"香草青淞"
     },
     "{Syrup}{CherryBlossoms}{Yogurt}":{
-        name:"{酸甜樱色}",
+        name:"{Sour-sweet_Sakura}",
         image:"酸甜樱色"
     },
     "{Cream}{ChoppedNuts}{DarkChocolate}":{
-        name:"{月夜岩雪}",
+        name:"{Moonlit_Snow_on_Rock}",
         image:"月夜岩雪"
     },
     "{Strawberry}{Cream}{DarkChocolate}":{
-        name:"{烈焰红心}",
+        name:"{Blazing_Heart}",
         image:"烈焰红心"
     },
     "{Cream}{Cherry}{DarkChocolate}":{
-        name:"{沉雪林樱}",
+        name:"{Cherry_Sunk_in_Snow}",
         image:"沉雪林樱"
     },
     "{Cream}{Icing}{MatchaPowder}":{
-        name:"{茶抹千霜}",
+        name:"{Matcha_Adorned_Frost}",
         image:"抹茶千霜"
     },
     "{Blueberry}{Lemon}{WhiteChocolate}":{
-        name:"{极地蓝柠}",
+        name:"{Polar_Blue_Lemon}",
         image:"极地蓝柠"
     },
     "{Blueberry}{Cream}{VanillaEssentialOil}":{
-        name:"{空色香馨}",
+        name:"{Azure_Aroma}",
         image:"空色香馨"
     },
     "{Strawberry}{Cream}{GlutinousRice}":{
-        name:"{火红玫瑰}",
+        name:"{Flaming_Rose}",
         image:"火红玫瑰"
     },
     "{Strawberry}{CherryBlossoms}{Marshmallow}":{
-        name:"{甜心之恋}",
+        name:"{Love_of_Sweetheart}",
         image:"甜心之恋"
     },
     "{Cream}{CherryBlossoms}{Marshmallow}":{
-        name:"{绵软樱云}",
+        name:"{Gooey_Cloud_of_Sakura}",
         image:"软绵樱云"
     },
     "{Syrup}{Mint}{CoconutShred}{SeaSalt}":{
-        name:"{清凉海滩}",
+        name:"{Cool_Beach}",
         image:"清凉海滩"
     },
     "{Strawberry}{Cream}{Cherry}{Cheese}":{
-        name:"{法式甜莓}",
+        name:"{French_Sweet_Berries}",
         image:"法式甜莓"
     },
     "{Strawberry}{Blueberry}{Cherry}{Yogurt}":{
-        name:"{三色雪晶}",
+        name:"{Tricolor_Snowflakes}",
         image:"三色雪晶"
     },
     "{Cream}{Icing}{Mint}{Yogurt}":{
-        name:"{极地冰霜}",
+        name:"{Polar_Frost}",
         image:"极地冰霜"
     },
     "{Cream}{CocoaPowder}{CoffeeLiqueur}{Cheese}":{
-        name:"{提拉米苏}",
+        name:"{Tiramisu}",
         image:"提拉米苏"
     },
     "{Icing}{VanillaEssentialOil}{MatchaPowder}{DarkChocolate}":{
-        name:"{黎明与萤火}",
+        name:"{Dawn_and_Fireflies}",
         image:"黎明与萤火"
     },
     "{Strawberry}{RedBeans}{Rose}{CherryBlossoms}":{
-        name:"{火烈鸟}",
-        image:"flamingo"
+        name:"{Flamingo}",
+        image:"火烈鸟"
     },
     "{CherryBlossoms}{VanillaEssentialOil}{Marshmallow}{MatchaPowder}":{
-        name:"{茶煮云樱}",
+        name:"{Tea_Boiled_Sakura_Cloud}",
+        image:"茶煮云樱"
     },
     "{RedBeans}{GlutinousRice}{JujubePreserve}{CherryBlossoms}":{
-        name:"{樱蜜粽籺}"
+        name:"{Preserve_and_Rice_Dumpling}",
+        image:"樱蜜粽籺"
     },
     "{Cherry}{CocoaPowder}{Reore}{DarkChocolate}":{
-        name:"{精灵魔女}"
+        name:"{Clever_Witch}",
+        image:"精灵魔女"
     },
     "{Blueberry}{Cream}{Rose}{Grape}":{
-        name:"{紫色激情}"
+        name:"{Purple_Passion}",
+        image:"紫色激情"
     },
     "{SeaSalt}{Lamb}{Onion}{LaoBaigan}":{
-        name:"{得意羊洋}"
+        name:"{Complambcent_Onion}",
+        image:"得意羊洋"
     },
     "{GreenPepper}{RedPepper}{SoySauce}{Tenderloin}":{
-        name:"{青椒肉丝}"
+        name:"{Sauteed_Shredded_Pork_with_Green_Pepper}",
+        image:"青椒肉丝"
     },
     "{SeaSalt}{Onion}{RedPepper}{Cheese}":{
-        name:"{意式披萨}"
+        name:"{Italian_Pizza}",
+        image:"意式披萨"
     },
     "{LaoBaigan}{Rum}{CoffeeLiqueur}{DarkChocolate}":{
-        name:"{凌晨三点}"
+        name:"{3_oclock}",
+        image:"凌晨三点"
     },
     "{Strawberry}{Mango}{Yogurt}{Grape}{SeaSalt}":{
-        name:"{马尔代夫夏日风情}"
+        name:"{Maldivian_Summer}",
+        image:"马尔代夫夏日风情"
     },
     "{Strawberry}{Cream}{CherryBlossoms}{VanillaEssentialOil}{MatchaPowder}":{
-        name:"{青森弘前樱华慕斯}"
+        name:"{Hirosaki_Sakura}",
+        image:"青森弘前星夜樱华"
     },
     "{Strawberry}{Cream}{CherryBlossoms}{Mango}{Rum}":{
-        name:"{布列塔尼草莓牛奶}"
+        name:"{Brittany_Strawberry_Milk}",
+        image:"布列塔尼草莓牛奶"
     },
     "{Blueberry}{Lemon}{SeaSalt}{Reore}{Cheese}":{
-        name:"{波旁皇家海盐乳酪}"
+        name:"{Bourbon_Royal_Salty_Cheese}",
+        image:"波旁皇家海盐乳酪"
     },
     "{Icing}{VanillaEssentialOil}{Grape}{Marshmallow}{DarkChocolate}":{
-        name:"{阿芙乐尔糖霜千层}"
+        name:"{Aurora_Icing_Mille_Crepe}",
+        image:"阿芙乐尔糖霜千层"
     },
     "{Cream}{ChoppedNuts}{Mango}{Lemon}{WhiteChocolate}":{
-        name:"{巴伐利亚奶油布丁}"
+        name:"{Bavarian_Cream_Pudding}",
+        image:"巴伐利亚奶油布丁"
     },
     "{Rose}{SeaSalt}{LaoBaigan}{Rum}{CoffeeLiqueur}":{
-        name:"{长亭十里别酒一盏}"
+        name:"{Parting_Glass_in_Pavilion}",
+        image:"长亭十里别酒一杯"
     }
 }
 
@@ -1559,7 +1746,11 @@ Window_CakeList.prototype.removeFromSelection = function(){
 }
 
 Window_CakeList.prototype.finishSelection = function(){
-    this._selectionList.sort();
+    //console.log(this._selectionList);
+    this._selectionList.sort(function(a,b){
+        return a-b;
+    });
+    console.log(this._selectionList);
     var key = "";
     keyNum = this.keyNum;
     for(var i = 0; i<this._selectionList.length; i++){
@@ -1575,8 +1766,9 @@ Window_CakeList.prototype.finishSelection = function(){
     if(!BirthdayManager.allCakes[key]){
         key = String(keyNum);
     }
-
-    scene._cakeDisplayWindow.showCake(BirthdayManager.allCakes[key].image);
+    if(BirthdayManager.allCakes[key].image){
+        scene._cakeDisplayWindow.showCake(BirthdayManager.allCakes[key].image);
+    }
     BirthdayManager.cakeKey = key;
     this.deactivate();
     this._confirm_window.deselect();
@@ -1586,9 +1778,31 @@ Window_CakeList.prototype.finishSelection = function(){
     this._finalConfirm_window.activate();
     this._finalConfirm_window.select(0);
     BirthdayManager._caketachi.changeEmoji("koyori_v");
+
+    if(!BirthdayManager.achievements.madeCakes.contains(BirthdayManager.cakeKey)){
+        BirthdayManager.achievements.madeCakes.push(BirthdayManager.cakeKey)
+    }
+
+    if(BirthdayManager.achievements.madeCakes.length == 1){
+        BirthdayManager.unlockAchievement(1);
+    }
+
+    if(BirthdayManager.achievements.madeCakes.length == 15){
+        BirthdayManager.unlockAchievement(8);
+    }
+
+    if(BirthdayManager.achievements.madeCakes.length == 30){
+        BirthdayManager.unlockAchievement(9);
+    }
+
+    if(BirthdayManager.achievements.madeCakes.length >= 38){
+        BirthdayManager.unlockAchievement(14);
+        var c = new Sprite_Celebration(120);
+        SceneManager._scene.addChild(c);
+    }
 }
 
-BirthdayManager.cakeKey = "{Strawberry}{CherryBlossoms}{WhiteChocolate}"
+BirthdayManager.cakeKey = "{Strawberry}{Cream}{WhiteChocolate}"
 
 Window_CakeList.prototype.returnToSelection = function(){
     //console.log(1);
@@ -1657,13 +1871,13 @@ Window_ChooseLanguage.prototype.constructor = Window_ChooseLanguage;
 Window_ChooseLanguage.prototype.initialize = function(x, y){
     this.clearCommandList();
     this.makeCommandList();
-    Window_Selectable.prototype.initialize.call(this, x, y, Graphics.boxWidth, this.fittingHeight(4));
+    Window_Selectable.prototype.initialize.call(this, x, y, Graphics.boxWidth, this.fittingHeight(3));
     this.refresh();
     this.select(0);
     this.activate();
     this.setHandler("cn",this.changeLocaleTocn.bind(this));
     this.setHandler("en",this.changeLocaleToen.bind(this));
-    this.setHandler("jp",this.changeLocaleTojp.bind(this));
+    //this.setHandler("jp",this.changeLocaleTojp.bind(this));
     this.setHandler("return",this.goBack.bind(this));
 }
 
@@ -1674,7 +1888,7 @@ Window_ChooseLanguage.prototype.maxCols = function(){
 Window_ChooseLanguage.prototype.makeCommandList = function(){
     this.addCommand("简体中文","cn");
     this.addCommand("English","en");
-    this.addCommand("日本語","jp");
+    //this.addCommand("日本語","jp");
     this.addCommand("{return}","return")
 }
 
@@ -1978,35 +2192,30 @@ BirthdayManager.testMethod = function(){
 }
 //信息窗口的变动
 
+BirthdayManager.getFontSize = function(){
+    var rate = Math.min(Graphics.boxWidth/375, Graphics.boxHeight/812);
+    var size = 19*rate;
+    if(size<18){
+        size = 18;
+    }
+
+    if(size>22){
+        size = 22;
+    }
+    return size
+}
+
 Window_Message.prototype.createContents = function() {
     this.contents = new Bitmap(this.contentsWidth()+2* this.standardPadding(), this.contentsHeight());
     this.resetFontSettings();
 };
 
 Window_Message.prototype.standardFontSize = function() {
-    var rate = Math.min(Graphics.boxWidth/375, Graphics.boxHeight/812);
-    var size = 19*rate;
-    if(size<18){
-        size = 18;
-    }
-
-    if(size>22){
-        size = 22;
-    }
-    return size
+    return BirthdayManager.getFontSize();
 };
 
 Window_Base.prototype.standardFontSize = function() {
-    var rate = Math.min(Graphics.boxWidth/375, Graphics.boxHeight/812);
-    var size = 19*rate;
-    if(size<18){
-        size = 18;
-    }
-
-    if(size>22){
-        size = 22;
-    }
-    return size
+    return BirthdayManager.getFontSize();
 };
 Window_ChoiceList.prototype.standardFontSize = function(){
     var rate = Math.min(Graphics.boxWidth/375, Graphics.boxHeight/812);

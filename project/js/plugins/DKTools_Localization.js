@@ -2048,7 +2048,6 @@ Object.defineProperty(TextManager, 'currencyUnit', {
 const Localization_Game_Message_add = Game_Message.prototype.add;
 Game_Message.prototype.add = function(text) {
     text = DKTools.Localization.getText(text);
-
     Localization_Game_Message_add.call(this, text);
 };
 

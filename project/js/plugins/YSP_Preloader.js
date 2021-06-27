@@ -28,7 +28,17 @@ ysp.Preloader.GLOBAL = {
         "titles1/4",
         "titles1/7",
         "titles1/8",
-        "titles1/9"
+        "titles1/9",
+        "system/Window_cyan",
+        "system/Window_magenta",
+        "system/Window_pink",
+        "system/Window_purple",
+        "system/Window_yellow",
+        "faces/koyori",
+        "faces/mashiro",
+        "faces/mea",
+        "faces/noe",
+        "pictures/FishBanParticle"
     ],
 
     VIDEOS: [
@@ -66,10 +76,6 @@ ysp.Preloader.MAP_BASED = {
         IMAGES: [
         // Insert something here
         "system/selected",
-        "pictures/tachi/koyori_body",
-        "pictures/tachi/koyori_normal",
-        "pictures/tachi/koyori_o",
-        "pictures/tachi/koyori_v",
         "pictures/图",
         ],
 
@@ -78,15 +84,26 @@ ysp.Preloader.MAP_BASED = {
         ]
     },
 
-    3: {
+    9: {
         IMAGES: [
         // Insert something here
+        "Map__charParticles/par_Rune3"
         ],
 
         VIDEOS: [
         // Insert something here
         ]
-    } 
+    },
+    12:{
+        IMAGES: [
+            // Insert something here
+            "pictures/FinalCG"
+            ],
+    
+            VIDEOS: [
+            // Insert something here
+            ]
+    }
     // END
 };
 

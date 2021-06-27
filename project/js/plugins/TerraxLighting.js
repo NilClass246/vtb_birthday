@@ -3228,7 +3228,7 @@ Imported.TerraxLighting = true;
 
 // ALIASED FROM RPG OBJECTS TO ADD LIGHTING TO CONFIG MENU
 
-	ConfigManager.TxLighting = true;
+	ConfigManager.TxLighting = false;
 
 	Object.defineProperty(ConfigManager, 'TxLighting', {
 		get: function() {
@@ -3266,7 +3266,7 @@ Imported.TerraxLighting = true;
 		if (value !== undefined) {
 			return !!config[name];
 		} else {
-			return true;
+			return false;
 		}
 	};
 

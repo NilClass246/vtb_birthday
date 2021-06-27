@@ -4348,7 +4348,8 @@ Window_Message.prototype.canStart = function() {
 Window_Message.prototype.startMessage = function() {
     this._textState = {};
     this._textState.index = 0;
-    this._textState.text = this.convertEscapeCharacters($gameMessage.allText());
+    //console.log(this.convertEscapeCharacters($gameMessage.allText()));
+    this._textState.text = DKTools.Localization.getText(this.convertEscapeCharacters($gameMessage.allText()));
     this.newPage(this._textState);
     this.updatePlacement();
     this.updateBackground();
@@ -4356,6 +4357,10 @@ Window_Message.prototype.startMessage = function() {
 };
 
 Window_Message.prototype.updatePlacement = function() {
+    //console.log(SceneManager._scene.showingWindows);
+    if(SceneManager._scene.hidingWindows||SceneManager._scene.showingWindows){
+        return;
+    }
     if(BirthdayManager.endingWindow){
         this.x = 0;
         this.y = this._positionType * (Graphics.boxHeight - this.height) / 2;
@@ -4638,7 +4643,7 @@ Window_ScrollText.prototype.update = function() {
 };
 
 Window_ScrollText.prototype.startMessage = function() {
-    console.log($gameMessage.allText());
+    //console.log($gameMessage.allText());
     this._text = DKTools.Localization.getText($gameMessage.allText());
     this.refresh();
     this.show();
@@ -5794,12 +5799,13 @@ Window_TitleCommand.prototype.updatePlacement = function() {
 
 Window_TitleCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.newGame,   'newGame');
-    //this.addCommand(TextManager.continue_, 'continue', this.isContinueEnabled());
+    this.addCommand(TextManager.continue_, 'continue', this.isContinueEnabled());
     this.addCommand(TextManager.options,   'options');
 };
 
 Window_TitleCommand.prototype.isContinueEnabled = function() {
     return DataManager.isAnySavefileExists();
+    //return true;
 };
 
 Window_TitleCommand.prototype.processOk = function() {

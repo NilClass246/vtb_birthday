@@ -270,6 +270,10 @@ var PreloadManager;
         }
     };
 
+    BirthdayManager.preloadImages = function(type, filename, hue){
+        
+    }
+
     PreloadManager.preloadBGM = function(audioObject) {
         this.preloadAudio("bgm", audioObject);
     };

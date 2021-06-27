@@ -515,7 +515,9 @@ Scene_Title.prototype.commandNewGame = function() {
 
 Scene_Title.prototype.commandContinue = function() {
     this._commandWindow.close();
-    SceneManager.push(Scene_Load);
+    
+    BirthdayManager.loadAutoSave();
+    //SceneManager.push(Scene_Load);
 };
 
 Scene_Title.prototype.commandOptions = function() {

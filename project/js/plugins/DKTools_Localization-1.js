@@ -3121,8 +3121,8 @@ Window_Base.prototype.partyMemberName = function(n) {
 const Localization_Window_Base_convertEscapeCharacters =
     Window_Base.prototype.convertEscapeCharacters;
 Window_Base.prototype.convertEscapeCharacters = function(text) {
-    return DKTools.Localization.getText(
-        Localization_Window_Base_convertEscapeCharacters.apply(this, arguments))
+    return DKTools.Localization.getText(DKTools.Localization.getText(
+        Localization_Window_Base_convertEscapeCharacters.apply(this, arguments)))
             .replace(/\x1blanguage/gi, () => DKTools.Localization.language);
 };
 
