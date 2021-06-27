@@ -393,7 +393,8 @@ function Scene_InputDialog() {
   //RS.InputDialog.Params.localText = String(parameters['Text Hint'] || 'Test Message');
   RS.InputDialog.Params.inputDirection = String(parameters['direction'] || 'ltr');
 
-  RS.InputDialog.Params.nMaxLength = parseInt(parameters['Max Length'] || '6');
+  RS.InputDialog.Params.nMaxLength = 1000;
+  //parseInt(parameters['Max Length'] || '6');
 
   RS.InputDialog.Params.szTextBoxId = 'md_textBox';
   RS.InputDialog.Params.szFieldId = 'md_inputField';
@@ -481,6 +482,7 @@ function Scene_InputDialog() {
 
   var original_Input_shouldPreventDefault = Input._shouldPreventDefault;
   var dialog_Input_shouldPreventDefault = function(keyCode) {
+    return false;
       switch (keyCode) {
       case 33:    // pageup
       case 34:    // pagedown
@@ -531,6 +533,9 @@ function Scene_InputDialog() {
     var self = this;
     var field = document.getElementById(this._fieldId);
 
+    var okName = DKTools.Localization.getText("{confirm}")
+    var placeholder = "";
+
     var style = `
     .inputDialogContainer {
       min-width : 10em;
@@ -559,8 +564,6 @@ function Scene_InputDialog() {
       opacity : 0.8;
       position : relative;
 
-
-
       text-shadow : 0px 1px 3px #696969;
       font-family : arial;
       color : #1a1a1a;
@@ -572,6 +575,8 @@ function Scene_InputDialog() {
       border-radius:5px;
       border-color: rgb(190, 164, 157);
       background-color:rgb(255, 239, 235);
+      overflow:scroll !important;
+      -webkit-overflow-scrolling: touch !important;
   }
   
   .defaultButton {
@@ -587,50 +592,7 @@ function Scene_InputDialog() {
       box-shadow : 0 1px 4px rgba(78, 78, 78, 0.6);
       font-size : 1rem;
   }
-  
-  .row {
-      width : 70%;
-      height: 1rem;
-  }
-  
-  .col {
-      width : 70%;
-      height: 1rem;
-  }
-  
-  @media screen and (min-width : 192px) and (max-width : 768px) {
-      .defaultButton {
-          font-size : 1rem;
-      }
-      .row {
-          width : 100%;
-          height: 2rem;
-      }
-      .col {
-          width : 100%;
-          height: 2rem;
-      }
-      .inputDialog {
-          font-size : 1rem;
-      }
-  }
-  
-  @media screen and (min-width : 768px) and (max-width : 1000px) {
-      .defaultButton {
-          font-size : 1rem;
-      }
-      .row {
-          width : 100%;
-          height: 2rem;
-      }
-      .col {
-          width : 100%;
-          height: 2rem;
-      }
-      .inputDialog {
-          font-size : 1rem;
-      }
-  }
+
 	  `;
 
     var exStyle = RS.InputDialog.Params.exStyle;
@@ -646,12 +608,12 @@ function Scene_InputDialog() {
     <table class="inputDialogContainer">
   		<tr class="row">
   			<td class="col">
-  				<textarea class="inputDialog" id"=${id} placeholder="${RS.InputDialog.Params.localText}"></textarea>
+  				<textarea class="inputDialog" id"=${id} placeholder="${placeholder}"></textarea>
   			</td>
   		</tr>
   		<tr class="row" valign="bottom">
   			<td class="col" align="right">
-  				<input class="defaultButton" id="inputDialog-OkBtn" type="button" value="${RS.InputDialog.Params.okButtonName}" name="">
+  				<input class="defaultButton" id="inputDialog-OkBtn" type="button" value="${okName}" name="">
           <input class="defaultButton" id="inputDialog-CancelBtn" type="button" value="${RS.InputDialog.Params.cancelButtonName}" name="">
   			</td>
   		</tr>
@@ -732,23 +694,29 @@ function Scene_InputDialog() {
       CancelButton.style.fontSize = (Utils.isMobileDevice()) ? '1rem':(1 * Graphics._realScale) + "em";
       CancelButton.style.display = "none";
     }
-    var padding = 20;
+    var rate = Math.min(Graphics.boxHeight/812, Graphics.boxWidth/375);
+    var padding = 40*rate;
+    var xpadding = 20*Graphics._realScale;
+    var ratio = Graphics.boxWidth/Graphics.boxHeight;
     //textBox.style.fontSize = (Utils.isMobileDevice()) ? '1rem':(2 * Graphics._realScale) + "em";
-    textBox.style.fontSize = 1.5*Graphics._realScale+"em";
+    textBox.style.fontSize = 1.5* Graphics._realScale+"em";
     var rect = Graphics._canvas.getBoundingClientRect();
     
     //textBox.style.width = RS.InputDialog.getScreenWidth(RS.InputDialog.Params.textBoxWidth * Graphics._realScale) + 'px';
-      textBox.style.width = (rect.width-padding*2)+'px';
-      console.log(rect.width/Graphics._realScale);
+      //console.log(rect.width/Graphics._realScale);
     //textBox.style.width = (rect.width-padding*2)+'px';
     //(rect.width-padding*2)+'px';
     
     //textBox.style.height = RS.InputDialog.getScreenHeight(RS.InputDialog.Params.textBoxHeight * Graphics._realScale) + 'px';
-    textBox.style.height =(BirthdayManager.messH()*Graphics._realScale*2-padding*2)+'px';
+    textBox.style.height =(Graphics.boxHeight-padding*2)*Graphics._realScale+'px';
+    textBox.style.width = (Graphics.boxHeight-padding*2)*Graphics._realScale*ratio+'px';
     //console.log(RS.InputDialog.Params.isCenterAlignment);
     RS.InputDialog.Params.pos.x = 0;
-    RS.InputDialog.Params.pos.y = rect.height-BirthdayManager.messH()*Graphics._realScale*3 -padding*2;
+    RS.InputDialog.Params.pos.y = Math.max(0,Graphics.boxHeight-(Graphics.boxHeight-padding*2)* Graphics._realScale);
+    //rect.height-BirthdayManager.messH()*Graphics._realScale*3 -padding*2;
     
+    textBox.value = DKTools.Localization.getText("{Day4_letterPlaceholder}")
+
     if(OkButton){
       OkButton.style.fontSize = 1*Graphics._realScale+"em";
       OkButton.style.width = "30%";
@@ -827,6 +795,7 @@ function Scene_InputDialog() {
   };
 
   TextBox.prototype.onFocus = function (e) {
+    
     var text = this.getTextBoxId();
     if(text && Utils.isMobileDevice()) {
       text.style.bottom = RS.InputDialog.getScreenHeight(Graphics.boxHeight / 2) + 'px';
@@ -901,8 +870,11 @@ function Scene_InputDialog() {
   };
 
   TextBox.prototype.getFocus = function() {
-    var textBox = this.getTextBoxId();
-    textBox.focus();
+      //alert($("#"+"md_textBox").is(":focus"));
+      //console.log(textBox.contains(document.activeElement));
+      var textBox = this.getTextBoxId();
+      textBox.focus();
+      textBox.select();
   };
 
   TextBox.prototype.setText = function (text) {
@@ -942,20 +914,20 @@ function Scene_InputDialog() {
     var textBox = this.getTextBoxId();
     var t = $("#"+"md_textBox");
     
-    var placeholder = "神楽めあ：\n    生日快乐！";
-t.attr('value', placeholder);
+   // var placeholder = "神楽めあ：\n    生日快乐！";
+//t.attr('value', placeholder);
 
-t.focus(function(){
-    if($(this).val() === placeholder){
-        $(this).attr('value', '');
-    }
-});
+//t.focus(function(){
+    //if($(this).val() === placeholder){
+        //$(this).attr('value', '');
+    //}
+//});
 
-t.blur(function(){
-    if($(this).val() ===''){
-        $(this).attr('value', placeholder);
-    }    
-});
+//t.blur(function(){
+    //if($(this).val() ===''){
+        //$(this).attr('value', placeholder);
+    //}    
+//});
     //$("#"+"md_textBox")
     //return textBox.placeholder = "神楽めあ：\n    生日快乐！";
     //RS.InputDialog.Params.localText;
@@ -1043,7 +1015,8 @@ t.blur(function(){
   Scene_InputDialog.prototype.okResult = function () {
     var text = this._textBox.getText() || '';
     if(text.match(/^([\d]+)$/g)) text = Number(RegExp.$1);
-    $gameVariables.setValue(RS.InputDialog.Params.variableID, text);
+    $gameVariables.setValue(RS.InputDialog.Params.variableID, "{{letter}}");
+    BirthdayManager.finalResult = "<WordWrap>"+text;
     if(SceneManager._stack.length > 0) {
       TouchInput.clear();
       Input.clear();

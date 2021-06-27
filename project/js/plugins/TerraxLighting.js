@@ -314,8 +314,10 @@ Imported.TerraxLighting = true;
 	var optiontext = parameters['选项名称'] || 'Terrax光源';
 	var options_lighting_on = true;
 
-	var maxX = Number(parameters['光源覆盖宽度'] || 866);
-	var maxY = Number(parameters['光源覆盖高度'] || 630);
+	var maxX = window.screen.availWidth;
+	//Number(parameters['光源覆盖宽度'] || 866);
+	var maxY = window.screen.availHeight;
+	//Number(parameters['光源覆盖高度'] || 630);
 
 	// global timing variables
 	var tint_oldseconds=0;

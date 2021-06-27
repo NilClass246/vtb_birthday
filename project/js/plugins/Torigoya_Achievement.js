@@ -383,6 +383,9 @@
             if (!Achievement.settings.useGlobalSave) return;
 
             this._achievements = this._loadAchievements();
+            BirthdayManager.achievements.robotKilledCount = this._loadRobotKilledCount();
+            BirthdayManager.achievements.robotKillingCount = this._loadRobotKillingCount();
+            BirthdayManager.achievements.madeCakes = this._loadMadeCakes();
         };
 
         AchievementManager.prototype.save = function () {
@@ -395,16 +398,24 @@
             }
 
             StorageManager.save(Achievement.saveSlotID, JSON.stringify({
-                achievements: this._achievements
+                achievements: this._achievements,
+                robotKilledCount: BirthdayManager.achievements.robotKilledCount,
+                robotKillingCount: BirthdayManager.achievements.robotKillingCount,
+                madeCakes: BirthdayManager.achievements.madeCakes
             }));
         };
 
         AchievementManager.prototype.clear = function () {
             this._achievements = [];
-
+            BirthdayManager.achievements.robotKilledCount = 0;
+            BirthdayManager.achievements.robotKillingCount = 0;
+            BirthdayManager.achievements.madeCakes = 0;
             if (!Achievement.settings.useGlobalSave) return;
             StorageManager.save(Achievement.saveSlotID, JSON.stringify({
-                achievements: []
+                achievements: [],
+                robotKilledCount: 0,
+                robotKillingCount: 0,
+                madeCakes: 0
             }));
         };
 
@@ -417,6 +428,36 @@
                 return [];
             }
         };
+
+        AchievementManager.prototype._loadRobotKilledCount = function(){
+            try {
+                var json = StorageManager.load(Achievement.saveSlotID);
+                var obj = JSON.parse(json);
+                return obj.robotKilledCount || 0;
+            } catch (_e) {
+                return 0;
+            }
+        }
+
+        AchievementManager.prototype._loadRobotKillingCount = function(){
+            try {
+                var json = StorageManager.load(Achievement.saveSlotID);
+                var obj = JSON.parse(json);
+                return obj.robotKillingCount || 0;
+            } catch (_e) {
+                return 0;
+            }
+        }
+
+        AchievementManager.prototype._loadMadeCakes = function(){
+            try {
+                var json = StorageManager.load(Achievement.saveSlotID);
+                var obj = JSON.parse(json);
+                return obj.madeCakes || 0;
+            } catch (_e) {
+                return 0;
+            }
+        }
 
         return new AchievementManager();
     })();

@@ -7,8 +7,86 @@ BirthdayManager.TachiHeight = 540;
 BirthdayManager.camera_xoffset = 0;
 BirthdayManager.camera_yoffset = 0;
 
+BirthdayManager.finalResult = "meameasuki!!";
+
 BirthdayManager.windowSkin = "Window";
 
+//版本控制
+BirthdayManager.version = "V3.01"
+
+function Sprite_Version(){
+    this.initialize.apply(this, arguments);
+}
+
+Sprite_Version.prototype = Object.create(Sprite.prototype);
+Sprite_Version.prototype.constructor = Sprite_Version;
+
+Sprite_Version.prototype.initialize = function(){
+    Sprite.prototype.initialize.call(this);
+    this.bitmap = new Bitmap(100, 36);
+    this.bitmap.drawText(BirthdayManager.version , 0, 0, 100, 36, "left");
+}
+
+//成就
+BirthdayManager.achievements = {};
+BirthdayManager.achievements.robotKilledCount = 0;
+BirthdayManager.achievements.robotKillingCount = 0;
+BirthdayManager.achievements.madeCakes = 0;
+
+//scrollText
+//Window_ScrollText.prototype.initialize = function() {
+    //var width = Graphics.boxWidth;
+    //var height = BirthdayManager.availHeight;
+    //Window_Base.prototype.initialize.call(this, 0, BirthdayManager.upperFaceSize(), width, height);
+    //this.opacity = 0;
+    //this.hide();
+    //this._text = '';
+    //this._allTextHeight = 0;
+//};
+
+//文本输入的问题，救救我
+BirthdayManager.startTextInput = function(){
+    var scene = SceneManager._scene;
+    var textarea = new PIXI.TextInput({
+        input: {
+            fontSize: '25pt',
+            padding: '14px',
+            width: '500px',
+            color: '#26272E'
+        }, 
+        box: {
+            default: {fill: 0xE8E9F3, rounded: 16, stroke: {color: 0xCBCEE0, width: 4}},
+            focused: {fill: 0xE1E3EE, rounded: 16, stroke: {color: 0xABAFC6, width: 4}},
+            disabled: {fill: 0xDBDBDB, rounded: 16}
+        }
+    })
+    //textarea.focus();
+    scene.addChild(textarea);
+    textarea.focus();
+}
+
+//cg相关的问题
+BirthdayManager.showCG = function(){
+    var width = 1170;
+    var height = 648;
+    var rate;
+    if(width>Graphics.boxWidth){
+        rate = Graphics.boxWidth/width;
+    }else{
+        rate = Graphics.boxHeight/height;
+    }
+    var real_width = width*rate;
+    var real_height = height*rate;
+    var x = (Graphics.boxWidth - real_width)/2;
+    var y = (Graphics.boxHeight-real_height)/2;
+
+    $gameScreen.showPicture(10, "FinalCG", 0, x, y, rate*100, rate*100, 0, 0);
+    $gameScreen.movePicture(10, 0, x, y, rate*100, rate*100, 255, 0, 120);
+}
+
+BirthdayManager.movebackMessageWindow = function(){
+    this.endingWindow = true;
+}
 
 //虚拟按键相关的问题
 BirthdayManager.manageVirtualButtons = function(){
@@ -150,6 +228,10 @@ Scene_Title.prototype.createForeground = function() {
     BirthdayManager.SoundIcon.y = 34;
     BirthdayManager.SoundIcon.x = Graphics.boxWidth-34;
     this.addChild(BirthdayManager.SoundIcon);
+
+    var v = new Sprite_Version();
+    v.move(10,10);
+    this.addChild(v)
 };
 
 BirthdayManager.isMuted = false;
@@ -418,6 +500,7 @@ BirthdayManager.enterCakeScene = function(){
 }
 
 BirthdayManager.exitCakeScene = function(){
+    $gameVariables.setValue(35, BirthdayManager.allCakes[BirthdayManager.cakeKey].name);
     var scene = SceneManager._scene;
     this.hideInfo();
     this.hasDestinationSprite = true;
@@ -455,6 +538,8 @@ Sprite_CakeTachi.prototype.changeEmoji = function(name){
     this.addChild(this.emoji);
 }
 //文字输入方法
+
+
 BirthdayManager.enterCardScene = function(){
     //alert("window.innerWidth: "+window.innerWidth);
     //alert("window.screen.availWidth: "+window.screen.availWidth);
@@ -463,8 +548,25 @@ BirthdayManager.enterCardScene = function(){
     //alert("window.screen.width: "+window.screen.width);
    // alert("document.body.scrollWidth: "+document.body.scrollWidth);
     //alert("stageWidth: "+SceneManager._scene.width);
+    this.showInfo();
 
+    var scene = SceneManager._scene;
+    var width = 600;
+    var height = 600;
+    var xrate = Math.min(Graphics.boxWidth/375, Graphics.boxHeight/812);
+    var real_width = width*xrate;
+    var real_height = height*xrate;
+    var x = (Graphics.boxWidth-real_width)/2;
+    var y = Graphics.boxHeight;
+    var finalY = Graphics.boxHeight-real_height-BirthdayManager.messH();
 
+    $gameScreen.showPicture(3, "litter", 0, x, y, xrate*100, xrate*100, 255, 0);
+    $gameScreen.movePicture(3, 0, x, finalY, xrate*100, xrate*100, 255, 0, 120);
+    
+}
+
+BirthdayManager.exitCardScene = function(){
+    this.hideInfo();
     var scene = SceneManager._scene;
     var width = 600;
     var height = 600;
@@ -474,10 +576,8 @@ BirthdayManager.enterCardScene = function(){
     var x = (Graphics.boxWidth-real_width)/2;
     var y = Graphics.boxHeight;
     var finalY = Graphics.boxHeight-real_height-BirthdayManager.messH();
+    $gameScreen.movePicture(3, 0, x, finalY, xrate*100, xrate*100, 0, 0, 60);
 
-    $gameScreen.showPicture(3, "litter", 0, x, y, xrate*100, xrate*100, 255, 0);
-    $gameScreen.movePicture(3, 0, x, finalY, xrate*100, xrate*100, 255, 0, 60);
-    
 }
 
 function Image_letter(){
@@ -568,16 +668,50 @@ BirthdayManager.showCounter = function(){
     SceneManager._scene.addChild(c);
 }
 
-BirthdayManager.Pacman_Senteces = [
-    "{pacman_sentence1}",
-    "{pacman_sentence2}",
-    "{pacman_sentence3}",
-    "{pacman_sentence4}",
+BirthdayManager.Pacman_majo_Senteces = [
+    ["{pacman_majo_sentence_1_1}","{pacman_majo_sentence_1_2}"],
+    ["{pacman_majo_sentence_2_1}","{pacman_majo_sentence_2_2}","{pacman_majo_sentence_2_3}"],
+    ["{pacman_majo_sentence_3_1}","{pacman_majo_sentence_3_2}"],
+    ["{pacman_majo_sentence_4_1}","{pacman_majo_sentence_4_2}"],
+    ["{pacman_majo_sentence_5_1}"]
 ]
 
+BirthdayManager.Pacman_slayed_setences = [
+    "{pacman_slayed_sentence_1}",
+    "{pacman_slayed_sentence_2}",
+    "{pacman_slayed_sentence_3}",
+    "{pacman_slayed_sentence_4}",
+    "{pacman_slayed_sentence_5}",
+]
+BirthdayManager.cur_majo_bag = [];
+BirthdayManager.cur_majo_sentences = [];
+BirthdayManager.cur_majo_index = 0;
 BirthdayManager.Pacman_RenderSentences = function(){
+    if(this.cur_majo_bag.length<=0){
+        this.cur_majo_bag = this.Pacman_majo_Senteces.slice();
+    }
+    this.cur_majo_sentences = this.cur_majo_bag.splice(Math.floor(Math.random()*this.cur_majo_bag.length),1);
+    this.startMessage(this.cur_majo_sentences[0][0]);
+    this.cur_majo_index = 1;
+}
 
-    var sent = this.Pacman_Senteces[Math.floor(Math.random()*this.Pacman_Senteces.length)]
+BirthdayManager.Pacman_NextSentence = function(){
+    //console.log(1);
+    if(this.cur_majo_index==0||this.cur_majo_sentences[0].length<=0||this.cur_majo_index>(this.cur_majo_sentences[0].length-1)){
+        return;
+    }
+    this.startMessage(this.cur_majo_sentences[0][this.cur_majo_index]);
+    this.cur_majo_index +=1;
+}
+
+BirthdayManager.cur_slayed_bag = [];
+BirthdayManager.Pacman_RenderSlayedSentences = function(){
+    this.cur_majo_sentences = [];
+    this.cur_majo_index = 0;
+    if(this.cur_slayed_bag.length<=0){
+        this.cur_slayed_bag = this.Pacman_slayed_setences.slice();
+    }
+    var sent = this.cur_slayed_bag.splice(Math.floor(Math.random()*this.cur_slayed_bag.length),1);
     this.startMessage(sent);
 }
 
@@ -742,9 +876,9 @@ BirthdayManager.getTachiRate = function(){
     var xrate = Graphics.boxWidth/375;
     var yrate = Graphics.boxHeight/812;
     var rate = (Graphics.boxWidth<Graphics.boxHeight)?(xrate):(yrate);
-    //if(rate>=2){
-       // rate = 1;
-    //}
+    if(rate>=2){
+       rate = 2;
+    }
     return rate;
 }
 
@@ -806,29 +940,32 @@ BirthdayManager.showTachi = function(id, name, emoji, position){
         $gameScreen.movePicture(id+1, 0, leftx, y, 65*rate, 65*rate, 255, 0, 30);
 
     }else if(position =="right"){
-        if(!BirthdayManager.already2){
-            $gameScreen.showPicture(id, root+name, 0, x+actualwidth, y, 65*rate, 65*rate, 0, 0);
-            $gameScreen.showPicture(id+1, root+emoji, 0, x+actualwidth, y, 65*rate, 65*rate, 0, 0);
-            $gameScreen.movePicture(id, 0, x, y, 65*rate, 65*rate, 255, 0, 30);
-            $gameScreen.movePicture(id+1, 0, x, y, 65*rate, 65*rate, 255, 0, 30);
-            BirthdayManager.already2 = true;
-        }else{
-            $gameScreen.showPicture(id, root+name, 0, x, y, 65*rate, 65*rate, 255, 0);
-            $gameScreen.showPicture(id+1, root+emoji, 0, x, y, 65*rate, 65*rate, 255, 0);
-        }
+        $gameScreen.showPicture(id, root+name, 0, x+actualwidth, y, 65*rate, 65*rate, 0, 0);
+        $gameScreen.showPicture(id+1, root+emoji, 0, x+actualwidth, y, 65*rate, 65*rate, 0, 0);
+        $gameScreen.movePicture(id, 0, x, y, 65*rate, 65*rate, 255, 0, 30);
+        $gameScreen.movePicture(id+1, 0, x, y, 65*rate, 65*rate, 255, 0, 30);
     }
 }
 
 BirthdayManager.changeEmoji = function(id, emoji, position){
     var rate = this.getTachiRate();
+    var root = "tachi/"
     //console.log(rate);
     var y = Graphics.boxHeight-(277*rate)-SceneManager._scene._messageWindow.height;
     var x = Graphics.boxWidth-(162.5*rate);
-    if(position=="left"&&this.already1&&this.tachiName1){
-        $gameScreen.showPicture(id+2, root+emoji, 0, 0, y, 65*rate, 65*rate, 255, 0);
+    var leftx;
+    if(emoji.includes("koyori")||emoji.includes("mashiro")){
+        leftx = -20*rate
+    }else{
+        leftx = 0;
     }
-    if(position=="right"&&this.already2&&this.tachiName2){
-        $gameScreen.showPicture(id+2, root+emoji, 0, 0, y, 65*rate, 65*rate, 255, 0);
+    if(position=="left"){
+        //$gameScreen.erasePicture(id+1);
+        $gameScreen.showPicture(id+1, root+emoji, 0, leftx, y, 65*rate, 65*rate, 255, 0);
+    }
+    if(position=="right"){
+        //$gameScreen.erasePicture(id+1);
+        $gameScreen.showPicture(id+1, root+emoji, 0, leftx, y, 65*rate, 65*rate, 255, 0);
     }
 }
 
@@ -976,7 +1113,7 @@ Scene_Credits.prototype.constructor = Scene_Credits;
 Scene_Credits.prototype.create = function(){
     Scene_Base.prototype.create.call(this);
     this._window_credits = new Window_Credits();
-    this._window_credits.startMessage("aaaaa");
+    this._window_credits.startMessage("{Credits_Table}");
     this.addChild(this._window_credits);
 }
 
@@ -986,6 +1123,16 @@ function Window_Credits(){
 
 Window_Credits.prototype = Object.create(Window_ScrollText.prototype);
 Window_Credits.prototype.constructor = Window_Credits;
+
+Window_Credits.prototype.initialize = function(){
+    var width = Graphics.boxWidth;
+    var height = Graphics.boxHeight;
+    Window_Base.prototype.initialize.call(this, 0, 0, width, height);
+    this.opacity = 0;
+    this.hide();
+    this._text = '';
+    this._allTextHeight = 0;
+}
 
 Window_Credits.prototype.startMessage = function(t) {
     this._text = t;
@@ -1012,6 +1159,8 @@ Window_Credits.prototype.terminateMessage = function() {
 //制作上下窗口
 BirthdayManager.temps._Scene_Map_createAllWindows = Scene_Map.prototype.createAllWindows;
 Scene_Map.prototype.createAllWindows = function() {
+    this.hidingCount = 0;
+    this.showingCount = 0;
     BirthdayManager.temps._Scene_Map_createAllWindows.call(this);
     var upperFaceSize = Graphics.boxHeight/6
     this._TaskWindow = new Window_Task();
@@ -1029,6 +1178,54 @@ Scene_Map.prototype.createAllWindows = function() {
 
     //this.addWindow(this._CakeListWindow);
 };
+
+Scene_Map.prototype.hideAllWindows = function(){
+    this.hidingWindows = true;
+}
+
+Scene_Map.prototype.showAllWindows = function(){
+    this.showingWindows = true;
+}
+
+BirthdayManager.temps.Scene_Map_prototype_update = Scene_Map.prototype.update;
+Scene_Map.prototype.update = function(){
+    BirthdayManager.temps.Scene_Map_prototype_update.call(this);
+    if(this.hidingWindows){
+        if(this.hidingCount<60){
+            this.hidingCount+=1;
+            var disctance = Graphics.boxWidth/60;
+            this._TaskWindow.x -= disctance;
+            this._FaceWindow.x -= disctance;
+
+            this._messageWindow.x+=disctance;
+            this._InfoWindow.x+=disctance;
+            this._button1.x+=disctance;
+            this._button2.x+=disctance;
+
+        }else{
+            this.hidingCount = 0;
+            this.hidingWindows = false;
+        }
+    }
+
+    if(!this.hidingWindows&&this.showingWindows){
+        if(this.showingCount<60){
+            this.showingCount+=1;
+            var disctance = Graphics.boxWidth/60;
+            this._TaskWindow.x += disctance;
+            this._FaceWindow.x += disctance;
+
+            this._messageWindow.x-=disctance;
+            this._InfoWindow.x-=disctance;
+            this._button1.x-=disctance;
+            this._button2.x-=disctance;
+        }else{
+            this.showingCount=0;
+            this.showingWindows = false;
+        }
+    }
+
+}
 
 BirthdayManager.temps._Scene_Map_createWindowLayer = Scene_Map.prototype.createWindowLayer;
 Scene_Map.prototype.createWindowLayer = function(){
@@ -1739,7 +1936,6 @@ Window_CakeDisplay.prototype.initialize = function(x, y, width, height){
     this.showingCake = false;
 
 }
-
 Window_CakeDisplay.prototype.showCake = function(cname){
     var crate = Graphics.boxWidth/375;
     if(crate>=2){
@@ -1788,14 +1984,41 @@ Window_Message.prototype.createContents = function() {
 };
 
 Window_Message.prototype.standardFontSize = function() {
-    return 19;
+    var rate = Math.min(Graphics.boxWidth/375, Graphics.boxHeight/812);
+    var size = 19*rate;
+    if(size<18){
+        size = 18;
+    }
+
+    if(size>22){
+        size = 22;
+    }
+    return size
 };
 
 Window_Base.prototype.standardFontSize = function() {
-    return 19;
+    var rate = Math.min(Graphics.boxWidth/375, Graphics.boxHeight/812);
+    var size = 19*rate;
+    if(size<18){
+        size = 18;
+    }
+
+    if(size>22){
+        size = 22;
+    }
+    return size
 };
 Window_ChoiceList.prototype.standardFontSize = function(){
-    return 19;
+    var rate = Math.min(Graphics.boxWidth/375, Graphics.boxHeight/812);
+    var size = 19*rate;
+    if(size<18){
+        size = 18;
+    }
+
+    if(size>22){
+        size = 22;
+    }
+    return size
 }
 
 Window_Message.prototype.windowHeight = function() {

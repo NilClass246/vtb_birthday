@@ -431,6 +431,15 @@ Window_Base.prototype.calcTextHeight = function(textState, all) {
     return textHeight;
 };
 
+Window_Base.prototype.calcTextHeightEX = function (textState) {
+    while (textState.index < textState.text.length) {
+        this.processCharacter(textState);
+    }
+    var size = textState.y + this.calcTextHeight(textState, false);
+    this.contents.clear();
+    return size
+}
+
 Window_Base.prototype.drawIcon = function(iconIndex, x, y) {
     var bitmap = ImageManager.loadSystem('IconSet');
     var pw = Window_Base._iconWidth;
@@ -4347,6 +4356,12 @@ Window_Message.prototype.startMessage = function() {
 };
 
 Window_Message.prototype.updatePlacement = function() {
+    if(BirthdayManager.endingWindow){
+        this.x = 0;
+        this.y = this._positionType * (Graphics.boxHeight - this.height) / 2;
+        this.width = Graphics.boxWidth;
+        return;
+    }
     this._positionType = $gameMessage.positionType();
     if(this._positionType == 1){
         this.x = 0;
@@ -4361,6 +4376,10 @@ Window_Message.prototype.updatePlacement = function() {
 };
 
 Window_Message.prototype.updateBackground = function() {
+    if(BirthdayManager.endingWindow){
+        this.setBackgroundType(1);
+        return;
+    }
     this._background = $gameMessage.background();
     this.setBackgroundType(this._background);
 };
@@ -4373,7 +4392,9 @@ Window_Message.prototype.terminateMessage = function() {
     $gameMessage.clear();
     this._positionType = 2;
     this.updatePlacement();
-    this.setBackgroundType(0);
+    if(!BirthdayManager.endingWindow){
+        this.setBackgroundType(0);
+    }
 };
 
 Window_Message.prototype.updateWait = function() {
@@ -4617,16 +4638,18 @@ Window_ScrollText.prototype.update = function() {
 };
 
 Window_ScrollText.prototype.startMessage = function() {
-    this._text = $gameMessage.allText();
+    console.log($gameMessage.allText());
+    this._text = DKTools.Localization.getText($gameMessage.allText());
     this.refresh();
     this.show();
 };
 
 Window_ScrollText.prototype.refresh = function() {
-    var textState = { index: 0 };
+    var textState = { index: 0, x: this.textPadding(), y: 1, left: this.textPadding() };
     textState.text = this.convertEscapeCharacters(this._text);
+    textState.height = this.calcTextHeight(textState, false);
     this.resetFontSettings();
-    this._allTextHeight = this.calcTextHeight(textState, true);
+    this._allTextHeight = this.calcTextHeightEX(textState);
     this.createContents();
     this.origin.y = -this.height;
     this.drawTextEx(this._text, this.textPadding(), 1);

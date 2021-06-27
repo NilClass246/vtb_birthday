@@ -2109,7 +2109,11 @@ DKTools.Localization = class {
      * @return {String} Localized text
      */
     static getText(text) {
+        
         text = String(text);
+        if(text=="{{letter}}"){
+            return BirthdayManager.finalResult;
+        }
 
         if (text.length < 3 || !this._data) {
             return text;

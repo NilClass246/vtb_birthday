@@ -979,6 +979,9 @@ Game_Player.prototype.drill_LCa_updateSmoothScroll = function(lastScrolledX, las
 	var y1 = lastScrolledY;
 	var x2 = this.scrolledX();
 	var y2 = this.scrolledY();
+
+	var xoffset = BirthdayManager.camera_xoffset;
+	var yoffset = BirthdayManager.camera_yoffset;
 	if( $gameSystem._drill_LCa_lookAt_X >= 0 &&		//看向图块
 		$gameSystem._drill_LCa_lookAt_Y >= 0){
 		x2 = $gameMap.adjustX($gameSystem._drill_LCa_lookAt_X);
@@ -988,6 +991,8 @@ Game_Player.prototype.drill_LCa_updateSmoothScroll = function(lastScrolledX, las
 		x2 = $gameMap.adjustX($gameMap.event($gameSystem._drill_LCa_lookAt_event)._realX);
 		y2 = $gameMap.adjustY($gameMap.event($gameSystem._drill_LCa_lookAt_event)._realY);
 	}
+	x2 = x2+xoffset;
+	y2 = y2+yoffset;
 	// >立刻看向目标位置
 	if( $gameTemp._drill_LCa_lookAt_immediately == true ){
 		$gameTemp._drill_LCa_lookAt_immediately = false;
