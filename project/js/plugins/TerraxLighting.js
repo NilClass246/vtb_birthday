@@ -3257,7 +3257,7 @@ Imported.TerraxLighting = true;
 	Window_Options.prototype.addGeneralOptions = function() {
 		Window_Options_addGeneralOptions.call(this);
 		if (add_to_options === "true") {
-			this.addCommand(optiontext, 'TxLighting');
+			this.addCommand(DKTools.Localization.getText(optiontext), 'TxLighting');
 		}
 	};
 

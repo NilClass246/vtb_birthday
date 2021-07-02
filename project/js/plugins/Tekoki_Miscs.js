@@ -37,7 +37,7 @@ BirthdayManager.loadAutoSave = function(){
 }
 
 //版本控制
-BirthdayManager.version = "V3.05"
+BirthdayManager.version = "V3.07"
 
 function Sprite_Version(){
     this.initialize.apply(this, arguments);
@@ -274,6 +274,7 @@ Scene_Map.prototype.start = function() {
         }
     }
     BirthdayManager.manageSkinAndFace();
+    $gameSwitches.setValue(58, true); 
 };
 
 BirthdayManager.manageSkinAndFace = function(){
@@ -1189,7 +1190,8 @@ BirthdayManager.currentTask = null;
 BirthdayManager.setTaskText = function(txt){
     SceneManager._scene._TaskWindow.terminateMessage();
     this.currentTask = txt;
-    SceneManager._scene._TaskWindow.startMessage(DKTools.Localization.getText("<WordWrap>"+txt));
+    $gameVariables.setValue(40, DKTools.Localization.getText("<WordWrap>"+txt));
+    //SceneManager._scene._TaskWindow.startMessage(DKTools.Localization.getText("<WordWrap>"+txt));
 }
 
 //窗口大小
@@ -1226,7 +1228,7 @@ BirthdayManager.temps._Window_TitleCommand_updatePlacement = Window_TitleCommand
 Window_TitleCommand.prototype.updatePlacement = function() {
     BirthdayManager.temps._Window_TitleCommand_updatePlacement.call(this);
     this.x = (Graphics.boxWidth-this.width)/2;
-    this.y =Graphics.boxHeight*(2/3);
+    this.y =Graphics.boxHeight-this.fittingHeight(6);
     this.setBackgroundType(2);
 };
 
@@ -1538,7 +1540,7 @@ BirthdayManager.allCakes = {
     },
     "{Strawberry}{Cream}{Cherry}{Cheese}":{
         name:"{French_Sweet_Berries}",
-        image:"法式甜莓"
+        image:"法式甜梅"
     },
     "{Strawberry}{Blueberry}{Cherry}{Yogurt}":{
         name:"{Tricolor_Snowflakes}",
@@ -1706,7 +1708,7 @@ Window_CakeList.prototype.drawItemName = function(item, x, y, width) {
 };
 
 Window_CakeList.prototype.addToSelection = function(){
-    if(!this._selectionList.contains(this.index())){
+    if(!this._selectionList.contains(this.index())&&this.index()>=0){
         this._selectionList.push(this.index());
         this.keyNum+=1;
         switch(this.keyNum){
@@ -1993,7 +1995,7 @@ Window_Side_Backup.prototype.makeCommandList = function(){
 }
 
 Window_Side_Backup.prototype.processBackup = function(){
-    alert("正在制作中！")
+    alert(DKTools.Localization.getText("{Constructing}"))
 }
 
 //确认窗口
@@ -2155,6 +2157,7 @@ Window_CakeDisplay.prototype.showCake = function(cname){
     if(crate>=2){
         crate = 1;
     }
+    console.log(cname);
     this._cakeSprite = new Sprite(ImageManager.loadPicture("cakes/"+cname));
     this._cakeSprite.anchor.x = 0.5;
     this._cakeSprite.anchor.y = 0.5;
@@ -2193,6 +2196,7 @@ BirthdayManager.testMethod = function(){
 //信息窗口的变动
 
 BirthdayManager.getFontSize = function(){
+    return 19;
     var rate = Math.min(Graphics.boxWidth/375, Graphics.boxHeight/812);
     var size = 19*rate;
     if(size<18){
@@ -2202,7 +2206,7 @@ BirthdayManager.getFontSize = function(){
     if(size>22){
         size = 22;
     }
-    return size
+    return 19;
 }
 
 Window_Message.prototype.createContents = function() {
@@ -2418,6 +2422,7 @@ Window_Task.prototype.constructor = Window_Task;
 
 Window_Task.prototype.initialize = function(){
     Window_Message.prototype.initialize.call(this);
+    this.hasText = false;
     if(BirthdayManager.currentTask){
         this.startMessage(DKTools.Localization.getText("<WordWrap>"+BirthdayManager.currentTask))
     }
@@ -2437,10 +2442,45 @@ Window_Task.prototype.windowHeight = function() {
 };
 
 Window_Task.prototype.terminateMessage = function() {
+    this.hasText = false;
     this.contents.clear();
     BirthdayManager.currentTask = null;
     this._textState = null;
     this._positionType = 2;
     this.updatePlacement();
     this.setBackgroundType(0);
+};
+
+Window_Task.prototype.update = function() {
+    this.checkToNotClose();
+    Window_Base.prototype.update.call(this);
+    while (!this.isOpening() && !this.isClosing()) {
+        if (this.updateWait()) {
+            //console.log(1);
+            return;
+        } else if (this.updateLoading()) {
+            //console.log(2);
+            return;
+        } else if (this.updateInput()) {
+            //console.log(3);
+            return;
+        } else if (this.updateMessage()) {
+            return;
+        } else if (this.canStart()) {
+            this.hasText = true;
+            this.startMessage($gameVariables.value(40));
+            return;
+        } else {
+            this.startInput();
+            return;
+        }
+    }
+};
+
+Window_Task.prototype.canStart = function() {
+    if($gameVariables.value(40)&&!this.hasText){
+        return true;
+    }else{
+        return false;  
+    }
 };

@@ -1,19 +1,22 @@
 {
-    "interface_language":"言語選択",
+    "interface_language":"Select Language",
     "start_game":"Game Start",
-    "continue_game":"继续游戏",
+    "continue_game":"Continue",
     "option":"Settings",
     "credits":"Acknowledgement",
     "backup":"Backup",
     "yes":"Yes",
     "no":"No",
     "task_0":"No mission yet",
-    "lighting":"Lighting effects",
+    "Lighting":"Lighting",
     "Second_Lap_Text":"Where do you want to start the game?",
     "Second_Lap_Option1":"From the beginning",
-    "Second_Lap_Option2":"Material purchacing and cake cooking",
-    "Second_Lap_Option3":"Sokoban in the attic",
-    "Second_Lap_Option4":"Pacman on the street",
-    "Credits_Table":"<WordWrap>剧本/Script Writer\nHakureiR\n\n程序/Programmer\nNilClass\n\n绘师/Illustrator\nTaka同调士  繁星烁海  筑天\n\n翻译/Translator\n仓鼠卡特  m2agI2Rt\nfafaかな  Cryste\n\n分发/Distributor\nKinori  Sakuya\n\n特别鸣谢/Special Thanks\n\nThinking Rabbit\n岩谷彻\nAloe Guvner\nDKPlugins\nYanfly Engine Plugins\nDrill_up\nHudell(Orange)\nTerrax\n过眼云烟\nbiud436\nTOMY(Kamesoft)\nDr.Yami\nShaz\nMoghunter\nru_shalm(torigoya)\nIavra\nTor Damian Design\nCossio\n\n问题反馈/Feedback\nfeedback@meagames.cn\n\n\n手艺人工坊制作组/Craftsman Workshop Group\n2021年6月28日/2021.Jun.28"
-
+    "Second_Lap_Option2":"Cake baking",
+    "Second_Lap_Option3":"Attic cleaning",
+    "Second_Lap_Option4":"Letter delivery",
+    "AlwaysDash":"Always dash",
+    "RememberCommand":"Remember commands",
+    "Constructing":"Constructing!",
+    "Minimap":"Pacman Minimap",
+    "Credits_Table":"<WordWrap>剧本/Script Writer\nHakureiR\n\n程序/Programmer\nNilClass\n\n绘师/Illustrator\nTaka同调士  繁星烁海  筑天\n\n翻译/Translator\n仓鼠卡特  m2agI2Rt\nfafaかな  Cryste\n\n分发/Distributor\nKinori  Sakuya\n\n特别鸣谢/Special Thanks\n\nThinking Rabbit\n岩谷彻\nAloe Guvner\nDKPlugins\nYanfly Engine Plugins\nDrill_up\nHudell(Orange)\nTerrax\n过眼云烟\nbiud436\nTOMY(Kamesoft)\nDr.Yami\nShaz\nMoghunter\nru_shalm(torigoya)\nIavra\nTor Damian Design\nCossio\nJimbim\n\n问题反馈/Feedback\nfeedback@meagames.cn\n\n\n手艺人工坊制作组/Craftsman Workshop Group\n2021年6月28日/2021.Jun.28"
 }

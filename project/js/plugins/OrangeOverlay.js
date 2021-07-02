@@ -355,6 +355,7 @@ Hudell.OrangeOverlay = Hudell.OrangeOverlay || {};
       var data = {};
 
       data.bitmap = this.loadBitmap('fogs', fileName);
+      console.log(data.bitmap);
       if (!data.bitmap) return;
 
       data.sprite = new TilingSprite();
@@ -369,7 +370,8 @@ Hudell.OrangeOverlay = Hudell.OrangeOverlay || {};
       data.newY = 0;
       data.xMove = xMove;
       data.yMove = yMove;
-
+      console.log(data);
+      console.log(data.sprite);
       this._fogList[id] = data;
       this._tilemap.addChild(data.sprite);
     }

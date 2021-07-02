@@ -799,6 +799,9 @@ Sprite_Minimap.prototype.isNeedUpdate = function()
 Sprite_Minimap.prototype.update = function()
 {
     Sprite_Base.prototype.update.call(this);
+    if(!ConfigManager.haveMinimap){
+        this.destory();
+    }
 
     this.updateVisibility();
 
@@ -1521,7 +1524,7 @@ Spriteset_Map.prototype.createUpperLayer = function()
  */
 Spriteset_Map.prototype.createMinimap = function()
 {
-    if($gameMap.isMinimapEnabled()){
+    if($gameMap.isMinimapEnabled()&&ConfigManager.haveMinimap){
         this._minimap = new Sprite_Minimap();
         this._minimap.refresh();
         this.addChild(this._minimap);
@@ -1544,6 +1547,27 @@ Spriteset_Map.prototype.updateMinimap = function()
     return;
     this._minimap.setWholeOpacity(255 - this._fadeSprite.opacity);
     this._minimap.update();
+};
+
+ConfigManager.haveMinimap = true;
+
+var KMS_ConfigManager_makeData = ConfigManager.makeData;
+ConfigManager.makeData = function() {
+    var config = KMS_ConfigManager_makeData.call(this);
+    config.haveMinimap = this.haveMinimap;
+    return config;
+};
+
+var KMS_ConfigManager_applyData = ConfigManager.applyData;
+ConfigManager.applyData = function(config) {
+    KMS_ConfigManager_applyData.call(this,config);
+    this.haveMinimap = this.readFlag(config, 'haveMinimap');
+};
+
+var Window_Options_addGeneralOptions = Window_Options.prototype.addGeneralOptions;
+Window_Options.prototype.addGeneralOptions = function() {
+    Window_Options_addGeneralOptions.call(this);
+    this.addCommand(DKTools.Localization.getText("{minimap}"), 'haveMinimap');
 };
 
 })();
