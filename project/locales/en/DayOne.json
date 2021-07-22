@@ -34,8 +34,18 @@
     "Day1_mashiro_talk_2":"Let me see...Yes, seems that's all, you worked so hard, Mashiro-chan.",
     "Day1_mashiro_talk_3":"Em-hum, by all means it's for Mea senpai's birthday party, I'd like to collect as much blessing as I can.",
     "Day1_mashiro_talk_4":"Since this namelist is finished, I'll arange the routine...",
-    "Day1_mashiro_talk_5":"That could be delayed slightly. What if there's only Noe chan screen us at Mea senpai's side...",
-    "Day1_mashiro_talk_6":"Ah, you're right, I'm going to see the condition at Mea's.",
+    "Day1_mashiro_talk_5":"Wait a sec.",
+    "Day1_mashiro_talk_6":"Eh?",
+    "Day1_mashiro_talk_7":"Actually, I need your advice on cake.",
+    "Day1_mashiro_talk_8":"(take out cellphone) See? I think I could make one of these cakes, but on which to choose...",
+    "Day1_mashiro_talk_9":"Um, let'me see...",
+    "Day1_mashiro_talk_10":"I think they are all nice.",
+    "Day1_mashiro_talk_11":"How about make decision after looked about the materials in supermarket, Kisaragi senpai?",
+    "Day1_mashiro_talk_12":"Umm...Yes.",
+    "Day1_mashiro_talk_13":"Referring raw materials there...",
+    "Day1_mashiro_talk_14":"Yes, that's more resonable!",
+    "Day1_mashiro_talk_15":"Then I'll go!",
+    "Day1_mashiro_talk_16":"Ok, then I'm going to see the condition at Mea's.",
     "Day1_noe_talk_1":"Emmm...screening...screening...'I don't know where Koyori-chan went neither'...",
     "Day1_noe_talk_2":"There's no need to be so nervous.",
     "Day1_noe_talk_3":"Oops!",
@@ -128,5 +138,7 @@
     "Day1_masterial_added_6":"Ah, enough, enough, it must be strange if adding more!",
 
     "purchase_Text_0":"Are you picking ",
-    "purchase_Text_1":" ？"
+    "purchase_Text_1":" ？",
+    "material":"Material: ",
+    "cakeReceipt":"The Ultimate Guide on Baking Cakes"
 }

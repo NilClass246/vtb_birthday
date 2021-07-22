@@ -34,8 +34,18 @@
     "Day1_mashiro_talk_2":"我看看……唔，感觉上基本都整理到了呢。真白你相当用心了呀。",
     "Day1_mashiro_talk_3":"诶嘿嘿~毕竟是为了芽亚前辈的生日派对呢，我想要尽可能多的收集大家对前辈的祝福。",
     "Day1_mashiro_talk_4":"既然这份名单差不多齐了的话，那么我就去规划路线——",
-    "Day1_mashiro_talk_5":"这件事情可以稍微放一下。要是只有乃爱一个人在芽亚前辈那边打掩护的话……",
-    "Day1_mashiro_talk_6":"呀，也是，那我先去看看芽亚前辈那边的情况了。",
+    "Day1_mashiro_talk_5":"等一等",
+    "Day1_mashiro_talk_6":"诶？",
+    "Day1_mashiro_talk_7":"其实，在蛋糕上面我想要找九条你参谋一下。",
+    "Day1_mashiro_talk_8":"（掏出手机）你看，这些蛋糕的话我应该是可以做出来的，不过在具体的选择上——",
+    "Day1_mashiro_talk_9":"唔，我看看——",
+    "Day1_mashiro_talk_10":"我觉得都挺好的呀。",
+    "Day1_mashiro_talk_11":"其实，小夜里前辈你不如到了超市之后看看那边的材料再做决定吧。",
+    "Day1_mashiro_talk_12":"唔……也是。",
+    "Day1_mashiro_talk_13":"以那边的素材为参考的话……",
+    "Day1_mashiro_talk_14":"嗯，的确更合适呢！",
+    "Day1_mashiro_talk_15":"那么我出发了！",
+    "Day1_mashiro_talk_16":"嗯，那么我就再去看看芽亚前辈那边的情况！",
     "Day1_noe_talk_1":"唔……打掩护……打掩护……我也不知道小夜里她去哪里了……",
     "Day1_noe_talk_2":"没必要这么紧张的啦。",
     "Day1_noe_talk_3":"吓！",
@@ -47,7 +57,7 @@
     "Day1_noe_talk_9":"买粽子……小夜里她是去买粽子了……",
 
     "Day1_koyori_leaving_1":"唔……希望她们那边能好好地陪着芽亚前辈呢……",
-    "Day1_koyori_leaving_2":"在我出去的这段时间里面，就拜托你们了呀，乃爱，真白！",  
+    "Day1_koyori_leaving_2":"在我出去的这段时间里面，就拜托你们了呀！",  
     
     "Day1_npc_1_1":"【小孩子】\n这家超市里面的东西真多啊……天气还那么热……呜……真不想来跑这一趟……",
     "Day1_npc_1_2":"（诶？）",
@@ -127,5 +137,7 @@
     "Day1_masterial_added_6":"啊，差不多了差不多了，再多的话感觉会做出非常奇怪的东西来！",
 
     "purchase_Text_0":"要拿上",
-    "purchase_Text_1":"吗？"
+    "purchase_Text_1":"吗？",
+    "material":"材料: ",
+    "cakeReceipt":"蛋糕制作指南"
 }

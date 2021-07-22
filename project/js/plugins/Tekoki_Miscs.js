@@ -11,6 +11,7 @@ BirthdayManager.finalResult = "meameasuki!!";
 
 BirthdayManager.windowSkin = "Window";
 
+
 //自动存档
 Game_System.prototype.autoSaveGame = function() {
     $gameSystem.onBeforeSave();
@@ -37,7 +38,7 @@ BirthdayManager.loadAutoSave = function(){
 }
 
 //版本控制
-BirthdayManager.version = "V3.07"
+BirthdayManager.version = "V3.08"
 
 function Sprite_Version(){
     this.initialize.apply(this, arguments);
@@ -457,7 +458,7 @@ Window_Base.prototype.loadWindowskin = function() {
 BirthdayManager.temps.Window_Base_prototype_update = Window_Base.prototype.update;
 Window_Base.prototype.update = function() {
     BirthdayManager.temps.Window_Base_prototype_update.call(this);
-    if(this._windowSkinName !== BirthdayManager.windowSkin) {
+    if(this._windowSkinName !== BirthdayManager.windowSkin&&!(this instanceof Window_CakeReceipt)) {
         this.windowskin = ImageManager.loadSystem(BirthdayManager.windowSkin);
         this._windowSkinName = BirthdayManager.windowSkin;
     }
@@ -1468,159 +1469,444 @@ Window_Face.prototype.change = function(name){
     this._faceSprite.scale.x = (this.width-36) / 144;
     this._faceSprite.scale.y = (this.height-36) / 144;
 }
+
+BirthdayManager.boundary_pic = ImageManager.loadPicture("cellphone");
+BirthdayManager.boundary_back = ImageManager.loadPicture("cellphoneback");
+//蛋糕菜单
+
+function Scene_CakeReceipt(){
+    this.initialize.apply(this, arguments);
+}
+
+Scene_CakeReceipt.prototype = Object.create(Scene_MenuBase.prototype);
+Scene_CakeReceipt.prototype.constructor = Scene_CakeReceipt;
+
+function Window_CakeReceipt(){
+    this.initialize.apply(this, arguments);
+}
+
+Window_CakeReceipt.prototype = Object.create(Window_Base.prototype);
+Window_CakeReceipt.prototype.constructor = Window_CakeReceipt;
+
+Window_CakeReceipt.prototype.initialize = function(){
+    var x = 10;
+    var y = Graphics.boxHeight+10;
+    this.counter = 0;
+    var width = this.windowWidth();
+    var height = this.windowHeight();
+    Window_Selectable.prototype.initialize.call(this, x, y, width, height);
+    //this.refresh();
+    this.activate();
+    this.opacity = 0;
+    this.backOpacity = 0;
+    this._windowFrameSprite.opacity = 0;
+    //this.drawAllCakes();
+    this.drawBoundary();
+}
+
+Window_CakeReceipt.prototype.drawBoundary = function(){
+    var xrate = this.windowWidth()/579;
+    var yrate = this.windowHeight()/1125;
+
+    var side = 23*xrate;
+
+    this.boundary_sprite = new Sprite(new Bitmap(this.windowWidth(), this.windowHeight()));
+    this.boundary_sprite.bitmap.blt(BirthdayManager.boundary_back, 0, 0, 579, 1125, 0, 0, this.windowWidth(), this.windowHeight());
+    var uw = 103*yrate;
+    var uh = 24*yrate;
+    var ubh = 42*yrate;
+    this.boundary_sprite.bitmap.blt(BirthdayManager.boundary_pic, 235, 8, 103, 24, (this.windowWidth()-uw)/2, (ubh-uh)/2, uw, uh);
+    var lw = 470*yrate;
+    var lh = 88*yrate;
+    var lbh = 92*yrate;
+    this.boundary_sprite.bitmap.blt(BirthdayManager.boundary_pic, 59, 1035, 470, 88, (this.windowWidth()-lw)/2, 1035*yrate+(lbh-lh)/2, lw, lh);
+    
+    var wifiw = 21*yrate;
+    var wifih = 19*yrate;
+    var wifibd = 3*yrate;
+    var wifibh = 23*yrate;
+    this.boundary_sprite.bitmap.blt(BirthdayManager.boundary_pic, 532, 44, 21, 19, this.windowWidth()-side-wifibd-wifiw, ubh+(wifibh-wifih)/2, wifiw, wifih);
+    //this.addChild(this.boundary_sprite);
+    this.boundary_sprite.opacity = 0;
+
+    var uth = 59*yrate;
+    var uppertext = new Sprite(new Bitmap(200, uth));
+    uppertext.anchor.y = 0.5;
+    uppertext.bitmap.drawText("{cakeReceipt}",0,0,200, uth, "left");
+    uppertext.move(side+5, ubh+wifibh+uth/2);
+    this.boundary_sprite.addChild(uppertext);
+
+    var lowerText = new Sprite(new Bitmap(48, 48));
+    lowerText.anchor.x = 0.5;
+    lowerText.anchor.y = 0.5;
+    lowerText.bitmap.drawText("{return}",0,0, 48,48,"center");
+    lowerText.move(this.windowWidth()/2, 1035*yrate+lbh/2);
+    this.boundary_sprite.addChild(lowerText);
+
+
+    var buttonareaW = 80*yrate;
+    var buttonareaH = 80*yrate;
+    this.buttonarea = {
+        x: (this.windowWidth()-buttonareaW)/2,
+        y: 1035*yrate+(lbh-buttonareaH)/2,
+        width: buttonareaW,
+        height: buttonareaH
+    }
+    var tbh = 123*yrate;
+    this.display_window =new Window_CakeReceiptDisplay(23*xrate, tbh, this.width-2*23*xrate, this.height-tbh-lbh);
+    this.addChild(this.display_window);
+    this.addChild(this.boundary_sprite);
+
+}
+
+Window_CakeReceipt.prototype.checkTouch = function(){
+    if (TouchInput.isTriggered()){
+        if(TouchInput.x>this.x+this.buttonarea.x
+            &&TouchInput.x<this.x+this.buttonarea.x+this.buttonarea.width
+            &&TouchInput.y>this.y+this.buttonarea.y
+            &&TouchInput.y<this.y+this.buttonarea.y+this.buttonarea.height){
+                if(!this.isexiting){
+                    this.exit();
+                }
+            }
+    }
+}
+
+Window_CakeReceipt.prototype.exit = function(){
+    $gameSwitches.setValue(37, true);
+    this.isexiting = true;
+}
+
+Window_CakeReceipt.prototype.windowWidth = function(){
+    return Graphics.boxWidth - 20;
+}
+
+Window_CakeReceipt.prototype.windowHeight = function(){
+    return Graphics.boxHeight -20;
+}
+
+Window_CakeReceipt.prototype.update = function(){
+    Window_Base.prototype.update.call(this);
+    if(this.counter<60&&!this.isexiting){
+        this.y-=Graphics.boxHeight/60;
+        this.opacity+=255/60;
+        this.boundary_sprite.opacity+=255/60;
+        this.display_window.opacity+=255/60;
+        //this.refresh();
+        this.counter +=1;
+    }
+    if(this.counter>=60){
+        this.checkTouch();
+    }
+
+    if(this.isexiting){
+        this.y+=Graphics.boxHeight/60;
+        this.opacity-=255/60;
+        this.boundary_sprite.opacity-=255/60;
+        this.display_window.opacity-=255/60;
+        this.counter-=1;
+        if(this.counter<=0){
+            this.destroy();
+        }
+    }
+
+}
+
+function Window_CakeReceiptDisplay(){
+    this.initialize.apply(this, arguments);
+}
+
+Window_CakeReceiptDisplay.prototype = Object.create(Window_Command.prototype);
+Window_CakeReceiptDisplay.prototype.constructor = Window_CakeReceiptDisplay;
+
+Window_CakeReceiptDisplay.prototype.initialize = function(x, y, width, height){
+    var index = 0;
+    this.piclist = {};
+    for(key in BirthdayManager.allCakes){
+        //console.log(BirthdayManager.allCakes[key].image);
+        if(key=="3"||key=="4"||key=="5"){
+            continue;
+        }
+        this.piclist[index] = ImageManager.loadPicture("cakes/"+BirthdayManager.allCakes[key].image);
+        index+=1;
+    }
+    this.clearCommandList();
+    this.makeCommandList();
+    this.wwidth = width;
+    this.hheight = height;
+    Window_Selectable.prototype.initialize.call(this, x, y, width, height);
+    this.refresh();
+    this.activate();
+}
+
+Window_CakeReceiptDisplay.prototype.update  =function(){
+    Window_Command.prototype.update.call(this);
+    //console.log(this.piclist);
+}
+
+Window_CakeReceiptDisplay.prototype.windowWidth = function(){
+    return this.wwidth;
+}
+
+Window_CakeReceiptDisplay.prototype.windowHeight = function(){
+    return this.hheight;
+}
+
+BirthdayManager.ReceiptBack = ImageManager.loadSystem("Window_Phone");
+Window_CakeReceiptDisplay.prototype.loadWindowskin = function() {
+    this.windowskin = BirthdayManager.ReceiptBack;
+};
+
+Window_CakeReceiptDisplay.prototype.drawItem = function(index) {
+    var rect = this.itemRectForText(index);
+    var align = this.itemTextAlign();
+    this.resetTextColor();
+    this.changePaintOpacity(this.isCommandEnabled(index));
+    this.drawTextEx(this.commandName(index), rect.x, rect.y, rect.width, align);
+    if(this.piclist[index]){
+        this.contents.blt(this.piclist[index],0,0,96,96,rect.x-this.itemHeight()-this.padding/2, rect.y, this.itemHeight(),this.itemHeight());
+    }
+
+    var ctx = this.contents._context;
+    ctx.beginPath();
+    ctx.moveTo(rect.x-this.itemHeight()-this.padding/2, rect.y);
+    ctx.lineTo(rect.x-this.itemHeight()+rect.width, rect.y);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.moveTo(rect.x-this.itemHeight()-this.padding/2, rect.y+rect.height);
+    ctx.lineTo(rect.x-this.itemHeight()+rect.width, rect.y+rect.height);
+    ctx.stroke();
+    ctx.closePath();
+};
+
+Window_CakeReceiptDisplay.prototype.itemHeight = function() {
+    return 3*this.lineHeight();
+};
+
+Window_CakeReceiptDisplay.prototype.itemRect = function(index) {
+    var rect = new Rectangle();
+    var maxCols = this.maxCols();
+    rect.width = this.itemWidth();
+    rect.height = this.itemHeight();
+    var yoffset = ((this.height-2*this.padding)-this.maxPageRows()*rect.height)/2
+    rect.x = index % maxCols * (rect.width + this.spacing()) - this._scrollX+this.itemHeight();
+    rect.y = Math.floor(index / maxCols) * rect.height - this._scrollY+ yoffset;
+    return rect;
+};
+
+Window_CakeReceiptDisplay.prototype.makeCommandList = function(){
+    for(key in BirthdayManager.allCakes){
+        if(key=="3"||key=="4"||key=="5"){
+            continue;
+        }
+        var words = key.split('}{');
+        words[0] = words[0].substring(1, words[0].length);
+        words[words.length-1] = words[words.length-1].substring(0, words[words.length-1].length-1);
+        //console.log(words);
+        var material = "<WordWrap>{material}";
+        for(var i=0; i<words.length; i++){
+            material+="{"+words[i]+"}";
+            if(i<words.length-1){
+                material+="+";
+            }
+        }
+        this.addCommand(BirthdayManager.allCakes[key].name+"\n"+material, key);
+    }
+
+}
+
 //蛋糕编辑窗口
 BirthdayManager.allCakes = {
     "3":{
         name:"{Unpretentious_Cake}",
-        image:"朴实无华的蛋糕"
+        image:"朴实无华的蛋糕",
+        bitmap: ImageManager.loadPicture("cakes/"+"朴实无华的蛋糕")
     },
     "4":{
         name:"{Fragrant_Cake}",
-        image:"香气扑鼻的蛋糕"
+        image:"香气扑鼻的蛋糕",
+        bitmap: ImageManager.loadPicture("cakes/"+"香气扑鼻的蛋糕")
     },
     "5":{
         name:"{Alluring_Cake}",
-        image:"惹人垂涎的蛋糕"
+        image:"惹人垂涎的蛋糕",
+        bitmap: ImageManager.loadPicture("cakes/"+"惹人垂涎的蛋糕")
     },
     "{Strawberry}{Cream}{WhiteChocolate}":{
         name: "{Loving_Lily_Heart}",
-        image:"纯白恋心"
+        image:"纯白恋心",
+        bitmap: ImageManager.loadPicture("cakes/"+"纯白恋心")
     },
     "{Blueberry}{Cream}{Cheese}":{
         name:"{Blue_Ice_of_Snowfield}",
-        image:"雪域蓝冰"
+        image:"雪域蓝冰",
+        bitmap: ImageManager.loadPicture("cakes/"+"雪域蓝冰")
     },
     "{Icing}{VanillaEssentialOil}{MatchaPowder}":{
         name:"{Vanilla_Rime}",
-        image:"香草青淞"
+        image:"香草青淞",
+        bitmap: ImageManager.loadPicture("cakes/"+"香草青淞")
     },
     "{Syrup}{CherryBlossoms}{Yogurt}":{
         name:"{Sour-sweet_Sakura}",
-        image:"酸甜樱色"
+        image:"酸甜樱色",
+        bitmap: ImageManager.loadPicture("cakes/"+"酸甜樱色")
     },
     "{Cream}{ChoppedNuts}{DarkChocolate}":{
         name:"{Moonlit_Snow_on_Rock}",
-        image:"月夜岩雪"
+        image:"月夜岩雪",
+        bitmap: ImageManager.loadPicture("cakes/"+"月夜岩雪")
     },
     "{Strawberry}{Cream}{DarkChocolate}":{
         name:"{Blazing_Heart}",
-        image:"烈焰红心"
+        image:"烈焰红心",
+        bitmap: ImageManager.loadPicture("cakes/"+"烈焰红心")
     },
     "{Cream}{Cherry}{DarkChocolate}":{
         name:"{Cherry_Sunk_in_Snow}",
-        image:"沉雪林樱"
+        image:"沉雪林樱",
+        bitmap: ImageManager.loadPicture("cakes/"+"沉雪林樱")
     },
     "{Cream}{Icing}{MatchaPowder}":{
         name:"{Matcha_Adorned_Frost}",
-        image:"抹茶千霜"
+        image:"抹茶千霜",
+        bitmap: ImageManager.loadPicture("cakes/"+"抹茶千霜")
     },
     "{Blueberry}{Lemon}{WhiteChocolate}":{
         name:"{Polar_Blue_Lemon}",
-        image:"极地蓝柠"
+        image:"极地蓝柠",
+        bitmap: ImageManager.loadPicture("cakes/"+"极地蓝柠")
     },
     "{Blueberry}{Cream}{VanillaEssentialOil}":{
         name:"{Azure_Aroma}",
-        image:"空色香馨"
+        image:"空色香馨",
+        bitmap: ImageManager.loadPicture("cakes/"+"空色香馨")
     },
     "{Strawberry}{Cream}{GlutinousRice}":{
         name:"{Flaming_Rose}",
-        image:"火红玫瑰"
+        image:"火红玫瑰",
+        bitmap: ImageManager.loadPicture("cakes/"+"火红玫瑰")
     },
     "{Strawberry}{CherryBlossoms}{Marshmallow}":{
         name:"{Love_of_Sweetheart}",
-        image:"甜心之恋"
+        image:"甜心之恋",
+        bitmap: ImageManager.loadPicture("cakes/"+"甜心之恋")
     },
     "{Cream}{CherryBlossoms}{Marshmallow}":{
         name:"{Gooey_Cloud_of_Sakura}",
-        image:"软绵樱云"
+        image:"软绵樱云",
+        bitmap: ImageManager.loadPicture("cakes/"+"软绵樱云")
     },
     "{Syrup}{Mint}{CoconutShred}{SeaSalt}":{
         name:"{Cool_Beach}",
-        image:"清凉海滩"
+        image:"清凉海滩",
+        bitmap: ImageManager.loadPicture("cakes/"+"清凉海滩")
     },
     "{Strawberry}{Cream}{Cherry}{Cheese}":{
         name:"{French_Sweet_Berries}",
-        image:"法式甜梅"
+        image:"法式甜梅",
+        bitmap: ImageManager.loadPicture("cakes/"+"法式甜梅")
     },
     "{Strawberry}{Blueberry}{Cherry}{Yogurt}":{
         name:"{Tricolor_Snowflakes}",
-        image:"三色雪晶"
+        image:"三色雪晶",
+        bitmap: ImageManager.loadPicture("cakes/"+"三色雪晶")
     },
     "{Cream}{Icing}{Mint}{Yogurt}":{
         name:"{Polar_Frost}",
-        image:"极地冰霜"
+        image:"极地冰霜",
+        bitmap: ImageManager.loadPicture("cakes/"+"极地冰霜")
     },
     "{Cream}{CocoaPowder}{CoffeeLiqueur}{Cheese}":{
         name:"{Tiramisu}",
-        image:"提拉米苏"
+        image:"提拉米苏",
+        bitmap: ImageManager.loadPicture("cakes/"+"提拉米苏")
     },
     "{Icing}{VanillaEssentialOil}{MatchaPowder}{DarkChocolate}":{
         name:"{Dawn_and_Fireflies}",
-        image:"黎明与萤火"
+        image:"黎明与萤火",
+        bitmap: ImageManager.loadPicture("cakes/"+"黎明与萤火")
     },
     "{Strawberry}{RedBeans}{Rose}{CherryBlossoms}":{
         name:"{Flamingo}",
-        image:"火烈鸟"
+        image:"火烈鸟",
+        bitmap: ImageManager.loadPicture("cakes/"+"火烈鸟")
     },
     "{CherryBlossoms}{VanillaEssentialOil}{Marshmallow}{MatchaPowder}":{
         name:"{Tea_Boiled_Sakura_Cloud}",
-        image:"茶煮云樱"
+        image:"茶煮云樱",
+        bitmap: ImageManager.loadPicture("cakes/"+"茶煮云樱")
     },
     "{RedBeans}{GlutinousRice}{JujubePreserve}{CherryBlossoms}":{
         name:"{Preserve_and_Rice_Dumpling}",
-        image:"樱蜜粽籺"
+        image:"樱蜜粽籺",
+        bitmap: ImageManager.loadPicture("cakes/"+"樱蜜粽籺")
     },
     "{Cherry}{CocoaPowder}{Reore}{DarkChocolate}":{
         name:"{Clever_Witch}",
-        image:"精灵魔女"
+        image:"精灵魔女",
+        bitmap: ImageManager.loadPicture("cakes/"+"精灵魔女")
     },
     "{Blueberry}{Cream}{Rose}{Grape}":{
         name:"{Purple_Passion}",
-        image:"紫色激情"
+        image:"紫色激情",
+        bitmap: ImageManager.loadPicture("cakes/"+"紫色激情")
     },
     "{SeaSalt}{Lamb}{Onion}{LaoBaigan}":{
         name:"{Complambcent_Onion}",
-        image:"得意羊洋"
+        image:"得意羊洋",
+        bitmap: ImageManager.loadPicture("cakes/"+"得意羊洋")
     },
     "{GreenPepper}{RedPepper}{SoySauce}{Tenderloin}":{
         name:"{Sauteed_Shredded_Pork_with_Green_Pepper}",
-        image:"青椒肉丝"
+        image:"青椒肉丝",
+        bitmap: ImageManager.loadPicture("cakes/"+"青椒肉丝")
     },
     "{SeaSalt}{Onion}{RedPepper}{Cheese}":{
         name:"{Italian_Pizza}",
-        image:"意式披萨"
+        image:"意式披萨",
+        bitmap: ImageManager.loadPicture("cakes/"+"意式披萨")
     },
     "{LaoBaigan}{Rum}{CoffeeLiqueur}{DarkChocolate}":{
         name:"{3_oclock}",
-        image:"凌晨三点"
+        image:"凌晨三点",
+        bitmap: ImageManager.loadPicture("cakes/"+"凌晨三点")
     },
     "{Strawberry}{Mango}{Yogurt}{Grape}{SeaSalt}":{
         name:"{Maldivian_Summer}",
-        image:"马尔代夫夏日风情"
+        image:"马尔代夫夏日风情",
+        bitmap: ImageManager.loadPicture("cakes/"+"马尔代夫夏日风情")
     },
     "{Strawberry}{Cream}{CherryBlossoms}{VanillaEssentialOil}{MatchaPowder}":{
         name:"{Hirosaki_Sakura}",
-        image:"青森弘前星夜樱华"
+        image:"青森弘前星夜樱华",
+        bitmap: ImageManager.loadPicture("cakes/"+"青森弘前星夜樱华")
     },
     "{Strawberry}{Cream}{CherryBlossoms}{Mango}{Rum}":{
         name:"{Brittany_Strawberry_Milk}",
-        image:"布列塔尼草莓牛奶"
+        image:"布列塔尼草莓牛奶",
+        bitmap: ImageManager.loadPicture("cakes/"+"布列塔尼草莓牛奶")
     },
     "{Blueberry}{Lemon}{SeaSalt}{Reore}{Cheese}":{
         name:"{Bourbon_Royal_Salty_Cheese}",
-        image:"波旁皇家海盐乳酪"
+        image:"波旁皇家海盐乳酪",
+        bitmap: ImageManager.loadPicture("cakes/"+"波旁皇家海盐乳酪")
     },
     "{Icing}{VanillaEssentialOil}{Grape}{Marshmallow}{DarkChocolate}":{
         name:"{Aurora_Icing_Mille_Crepe}",
-        image:"阿芙乐尔糖霜千层"
+        image:"阿芙乐尔糖霜千层",
+        bitmap: ImageManager.loadPicture("cakes/"+"阿芙乐尔糖霜千层")
     },
     "{Cream}{ChoppedNuts}{Mango}{Lemon}{WhiteChocolate}":{
         name:"{Bavarian_Cream_Pudding}",
-        image:"巴伐利亚奶油布丁"
+        image:"巴伐利亚奶油布丁",
+        bitmap: ImageManager.loadPicture("cakes/"+"巴伐利亚奶油布丁")
     },
     "{Rose}{SeaSalt}{LaoBaigan}{Rum}{CoffeeLiqueur}":{
         name:"{Parting_Glass_in_Pavilion}",
-        image:"长亭十里别酒一杯"
+        image:"长亭十里别酒一杯",
+        //bitmap: ImageManager.loadPicture("cakes/"+"长亭十里别酒一杯")
     }
 }
 

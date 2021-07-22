@@ -138,11 +138,47 @@ TDDP.bootPreloadImages = {
 
     tileset: [
     ],
-
-    picture: [
-    
-    ],
     */
+    picture: [
+        "cakes/朴实无华的蛋糕",
+        "cakes/香气扑鼻的蛋糕",
+        "cakes/惹人垂涎的蛋糕",
+        "cakes/纯白恋心",
+        "cakes/雪域蓝冰",
+        "cakes/香草青淞",
+        "cakes/酸甜樱色",
+        "cakes/月夜岩雪",
+        "cakes/烈焰红心",
+        "cakes/沉雪林樱",
+        "cakes/抹茶千霜",
+        "cakes/极地蓝柠",
+        "cakes/空色香馨",
+        "cakes/火红玫瑰",
+        "cakes/甜心之恋",
+        "cakes/软绵樱云",
+        "cakes/清凉海滩",
+        "cakes/法式甜梅",
+        "cakes/三色雪晶",
+        "cakes/极地冰霜",
+        "cakes/提拉米苏",
+        "cakes/黎明与萤火",
+        "cakes/火烈鸟",
+        "cakes/茶煮云樱",
+        "cakes/樱蜜粽籺",
+        "cakes/精灵魔女",
+        "cakes/紫色激情",
+        "cakes/得意羊洋",
+        "cakes/青椒肉丝",
+        "cakes/意式披萨",
+        "cakes/凌晨三点",
+        "cakes/马尔代夫夏日风情",
+        "cakes/青森弘前星夜樱华",
+        "cakes/布列塔尼草莓牛奶",
+        "cakes/波旁皇家海盐乳酪",
+        "cakes/阿芙乐尔糖霜千层",
+        "cakes/巴伐利亚奶油布丁",
+        "cakes/长亭十里别酒一杯",
+    ],
     system: [
         "onSound",
         "onMute"
